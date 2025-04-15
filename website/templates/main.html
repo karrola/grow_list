@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}nazwa{% endblock %}
+
+{% block content %}
+
+    <h1>Nie masz jeszcze konta?</h1>
+    <a class="nav-item nav-link" id="signUp" href="/sign-up">
+    <button type="button" class="btn btn-primary">Zarejestruj się</button>
+    </a>
+    
+    <h1>Masz już konto?</h1>
+    <a class="nav-item nav-link" id="login" href="/login">
+    <button type="button" class="btn btn-primary">Zaloguj się</button>
+    </a>
+    
+{% endblock %}

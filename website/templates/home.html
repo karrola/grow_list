@@ -2,23 +2,23 @@
 {% block title %}Home{% endblock %}
 
 {% block content%}
-<h1 align="center">Notes</h1>
+<h1 align="center">Listy zadań</h1>
 
-<ul class="list-group list-group-flush" id="notes">
-  {% for note in user.notes %}
+<ul class="list-group list-group-flush" id="lists">
+  {% for list in user.lists %}
   <li class="list-group-item">
-    {{ note.data }}
-    <button type="button" class="close" onClick="deleteNote({{ note.id }})">
+    {{ list.data }}
+    <button type="button" class="close" onClick="deleteList({{ list.id }})">
     <span aria-hidden="true">&times;</span>
   </li>
   {% endfor %}
 </ul>
 
 <form method="POST">
-  <textarea name="note" id="note" class="form-control"></textarea>
+  <textarea name="list" id="list" class="form-control"></textarea>
   <br />
   <div align="center">
-    <button type="submit" class="btn btn-primary">Add Note</button>
+    <button type="submit" class="btn btn-primary">Add List</button>
   </div>
 </form>
 {% endblock %}
