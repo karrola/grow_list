@@ -15,11 +15,12 @@ def main():
 def home():
     if request.method == 'POST':
         list = request.form.get('list')
+        list_title = request.form.get('list_title')
 
-        if len(list) < 1:
-            flash('List is to short!', category='error')
+        if len(list) < 1 or len(list_title) < 1:
+            flash('Too short!', category='error')
         else: 
-            new_list = List(data=list, user_id=current_user.id)
+            new_list = List(data=list, user_id=current_user.id, list_title=list_title)
             db.session.add(new_list)
             db.session.commit()
             flash('List added!', category='success')
