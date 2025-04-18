@@ -5,9 +5,9 @@
 <h1 align="center">Listy zadań</h1>
 
 <ul class="list-group list-group-flush" id="lists">
-  {% for list in user.lists %}
+  {% for list in lists %}
   <li class="list-group-item">
-    <h3>{{ list.list_title }}</h3>
+    <a class="nav-item nav-link" id="list" href="{{ url_for('views.show_list', list_id=list.id) }}">{{ list.list_title }}</a>
     <button type="button" class="close" onClick="deleteList({{ list.id }})">
     <span aria-hidden="true">&times;</span>
   </li>
@@ -16,8 +16,7 @@
 
 <form method="POST">
   <label for="list_title">Tytuł:</label>
-  <input type="text" name="list_title" id="list_title">
-  <textarea name="list" id="list" class="form-control"></textarea>
+  <input type="text" name="list_title" id="list_title" value="" autocomplete="off" required>
   <br />
   <div align="center">
     <button type="submit" class="btn btn-primary">Add List</button>
