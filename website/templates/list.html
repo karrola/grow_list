@@ -21,4 +21,13 @@
     <button type="submit" class="btn btn-primary">Dodaj zadanie</button>
   </div>
 </form>
+
+<script>
+  window.addEventListener("load", () => {
+    if (window.history.replaceState) {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  });
+</script>
 {% endblock %}
+

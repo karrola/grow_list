@@ -63,7 +63,7 @@ def show_list(list_id):
             db.session.add(new_task)
             db.session.commit()
             flash('Task added!', category='success')
-            return redirect(url_for('views.show_list', list_id=list_id))
+            return redirect(url_for('views.show_list', list_id=list_id), code=303)
 
     return render_template('list.html', list=current_list, user=current_user)
 
