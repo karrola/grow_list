@@ -81,6 +81,13 @@ def delete_list():
     
     return jsonify({})
 
+@views.route('/update_task/<int:task_id>', methods=['POST'])
+def update_task(task_id):
+    task = Task.query.get_or_404(task_id)
+    task.if_done = 'if_done' in request.form
+    db.session.commit()
+    return redirect(url_for('views.show_list', list_id = task.list_id))
+
 @views.route('/delete-task', methods=['POST'])
 @login_required
 def delete_task():

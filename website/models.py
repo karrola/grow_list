@@ -22,3 +22,4 @@ class Task(db.Model):
     data = db.Column(db.String(100))
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     list_id = db.Column(db.Integer, db.ForeignKey('list.id'), nullable=False)
+    if_done = db.Column(db.Boolean, default = False)
