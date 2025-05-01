@@ -11,29 +11,43 @@
     <input type="checkbox" name="if_done" value="true" {% if task.if_done %}checked{% endif %} onchange="this.form.submit()">
     </form>
     <h3>{{ task.data }}</h3>
+    <span class="text-muted">
+    <i class="fa-solid fa-calendar-days"></i> {{ task.deadline_date.strftime('%d.%m.%Y') if task.deadline_date else '-' }}
+    <i class="fa-solid fa-clock"></i> {{ task.deadline_time.strftime('%H:%M') if task.deadline_time else '-' }}
+    </span>
     <button type="button" class="close" onClick="deleteTask({{ task.id }})">
     <span aria-hidden="true">&times;</span>
   </li>
   {% endfor %}
 </ul>
 
+{% set done_tasks = list.tasks | selectattr('if_done') | list %}
+{% if done_tasks %}
 <ul class="list-group list-group-flush" id="tasks">
   <h2>wykonane</h2>
-  {% for task in list.tasks if task.if_done%}
+  {% for task in list.tasks if task.if_done %}
   <li class="list-group-item">
     <form method="POST" action="{{ url_for('views.update_task', task_id=task.id) }}">
     <input type="checkbox" name="if_done" value="true" {% if task.if_done %}checked{% endif %} onchange="this.form.submit()">
     </form>
     <h3>{{ task.data }}</h3>
+    <span class="text-muted">
+    <i class="fa-solid fa-calendar-days"></i> {{ task.deadline_date.strftime('%d.%m.%Y') if task.deadline_date else '-' }}
+    <i class="fa-solid fa-clock"></i> {{ task.deadline_time.strftime('%H:%M') if task.deadline_time else '-' }}
+    </span>
     <button type="button" class="close" onClick="deleteTask({{ task.id }})">
     <span aria-hidden="true">&times;</span>
   </li>
   {% endfor %}
 </ul>
+{% endif %}
 
 <form method="POST">
   <input type="text" name="task" id="task" value="" autocomplete="off" required>
   <br />
+  <p>deadline:</p>
+  <input type="date" name="deadline_date" id="deadline_date">
+  <input type="time" name="deadline_time" id="deadline_time">
   <div align="center">
     <button type="submit" class="btn btn-primary">Dodaj zadanie</button>
   </div>

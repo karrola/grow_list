@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script src="{{ url_for('static', filename='index.global.min.js') }}"></script>
+<link href="{{ url_for('static', filename='calendar.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+
+<div id="calendar"></div>
+
+<div id="task-list">
+
+  <button id="toggle-past-days" onclick="togglePastDays()">Pokaż wcześniejsze dni</button>
+
+  <div id="past-days" style="display: none;">
+    {% for day in past_days %}
+      <div class="task-day" id="day-{{ day }}">
+        <h4>{{ day }}</h4>
+        <ul>
+          {% if events_by_date[day] %}
+            {% for event in events_by_date[day] %}
+              <li>{{ event.title }}</li>
+            {% endfor %}
+          {% else %}
+            <li>Brak zadań</li>
+          {% endif %}
+        </ul>
+        <button onclick="addTask('{{ day }}')">Dodaj zadanie</button>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div id="future-days">
+    {% for day in future_days %}
+      <div class="task-day" id="day-{{ day }}">
+        <h4>{{ day }}</h4>
+        <ul>
+          {% if events_by_date[day] %}
+            {% for event in events_by_date[day] %}
+              <li>{{ event.title }}</li>
+            {% endfor %}
+          {% else %}
+            <li>Brak zadań</li>
+          {% endif %}
+        </ul>
+        <button onclick="addTask('{{ day }}')">Dodaj zadanie</button>
+      </div>
+    {% endfor %}
+  </div>
+
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+      initialView: 'dayGridMonth',
+      locale: 'pl',
+      firstDay: 1,
+      headerToolbar: {
+        left: 'prev,next today',
+        center: 'title',
+        right: ''
+      },
+      events: {{ events|tojson }},
+      dateClick: function(info) {
+        const dateId = 'day-' + info.dateStr;
+        const target = document.getElementById(dateId);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    });
+    calendar.render();
+  });
+
+  function togglePastDays() {
+    var pastDays = document.getElementById('past-days');
+    var toggleButton = document.getElementById('toggle-past-days');
+    if (pastDays.style.display === 'none') {
+      pastDays.style.display = 'block';
+      toggleButton.textContent = 'Ukryj wcześniejsze dni';
+    } else {
+      pastDays.style.display = 'none';
+      toggleButton.textContent = 'Pokaż wcześniejsze dni';
+    }
+  }
+
+  function addTask(date) {
+    alert('Dodaj zadanie do dnia: ' + date);
+    // Można tu zrobić redirect albo popup
+    // window.location.href = `/add-task?date=${date}`;
+  }
+</script>
+
+{% endblock %}

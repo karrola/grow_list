@@ -1,0 +1,58 @@
+/* Zmniejsz kalendarz: */
+#calendar {
+  max-width: 900px;
+  margin: 20px auto;
+  font-size: 14px;
+}
+
+/* Ukryj eventy w kalendarzu (pokaż tylko datę) */
+.fc-event-title {
+  display: none;
+}
+
+.fc-event-time {
+  display: none;
+}
+
+/* Wygląd pojedynczego dnia */
+.fc-daygrid-day-frame {
+  max-height: 50px !important;
+  padding: 4px;
+}
+
+/* Ukryj listę dni z godzinami (gdyby się pojawiła) */
+.fc-timegrid-slot-label {
+  display: none;
+}
+
+/* Styl listy zadań pod kalendarzem */
+#task-list {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 10px;
+  background-color: #f7f7f7;
+  border-radius: 10px;
+}
+
+.task-day {
+  margin-bottom: 20px;
+}
+
+.task-day h4 {
+  margin-bottom: 8px;
+  font-size: 18px;
+  color: #333;
+}
+
+.task-day ul {
+  list-style: none;
+  padding-left: 10px;
+}
+
+.task-day li {
+  margin-bottom: 5px;
+}
+
+colgroup {
+  height: 50px;
+}

@@ -3,6 +3,10 @@ from flask_login import login_required, current_user
 from .models import List, Task
 from . import db
 import json
+from datetime import datetime, timedelta, date
+from collections import defaultdict
+import calendar as calendar_lib
+
 
 views = Blueprint('views', __name__)
 
@@ -17,9 +21,9 @@ def main():
 @login_required
 def home():
     if request.method == 'POST':
-        list_title = request.form.get('list_title')
+        list_title = request.form.get('list_title', '').strip()
 
-        if not list_title or len(list_title.strip()) < 1:
+        if not list_title:
             flash('Too short!', category='error')
         else: 
             new_list = List(user_id=current_user.id, list_title=list_title)
@@ -54,12 +58,24 @@ def show_list(list_id):
         return redirect(url_for('views.home'))
     
     if request.method == 'POST':
-        task_data = request.form.get('task')
+        task_data = request.form.get('task', '').strip()
 
-        if not task_data or len(task_data.strip()) < 1:
+        if not task_data:
             flash('Too short!', category='error')
-        else: 
-            new_task = Task(data=task_data, list_id=current_list.id, user_id=current_user.id)
+        else:
+            if request.form.get('deadline_date') and request.form.get('deadline_time'):
+                deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
+                deadline_time = datetime.strptime(request.form.get('deadline_time'), '%H:%M').time()
+                new_task = Task(data=task_data, list_id=current_list.id, user_id=current_user.id, deadline_date = deadline_date, deadline_time = deadline_time)
+            elif request.form.get('deadline_date') and not request.form.get('deadline_time'):
+                deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
+                new_task = Task(data=task_data, list_id=current_list.id, user_id=current_user.id, deadline_date = deadline_date)
+            elif request.form.get('deadline_time') and not request.form.get('deadline_date'):
+                flash('Wybierz datę, aby móc ustawić godzinę!', category='error')
+                return redirect(url_for('views.show_list', list_id=list_id), code=303)
+            else:
+                new_task = Task(data=task_data, list_id=current_list.id, user_id=current_user.id)
+
             db.session.add(new_task)
             db.session.commit()
             flash('Task added!', category='success')
@@ -101,3 +117,42 @@ def delete_task():
     
     return jsonify({})
 
+@views.route("/calendar")
+def calendar():
+    tasks = Task.query.filter(Task.deadline_date.isnot(None)).all()
+    events = [
+        {
+            "title": task.data,
+            "start": task.deadline_date.strftime("%Y-%m-%d"),
+            "allDay": True
+        }
+        for task in tasks
+    ]
+
+    events_by_date = defaultdict(list)
+    for event in events:
+        date = event["start"]
+        events_by_date[date].append(event)
+
+    now = datetime.now()
+    year = now.year
+    month = now.month
+    num_days = calendar_lib.monthrange(year, month)[1]
+
+    all_days = [
+        datetime(year, month, day)
+        for day in range(1, num_days + 1)
+    ]
+
+    # Rozdzielamy na przeszłe i przyszłe dni
+    past_days = [day.strftime("%Y-%m-%d") for day in all_days if day.date() < now.date()]
+    future_days = [day.strftime("%Y-%m-%d") for day in all_days if day.date() >= now.date()]
+
+    return render_template(
+        "calendar.html",
+        events=events,
+        events_by_date=events_by_date,
+        past_days=past_days,
+        future_days=future_days,
+        user=current_user
+    )
