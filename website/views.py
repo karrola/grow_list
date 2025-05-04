@@ -119,7 +119,12 @@ def delete_task():
 
 @views.route("/calendar")
 def calendar():
+    # Ustalamy zakres dat: od dziś do roku w przód
+    today = datetime.now().date()
+    end_date = today + timedelta(days=365)
+    
     tasks = Task.query.filter(Task.deadline_date.isnot(None)).all()
+
     events = [
         {
             "title": task.data,
@@ -127,6 +132,7 @@ def calendar():
             "allDay": True
         }
         for task in tasks
+        if today <= task.deadline_date <= end_date
     ]
 
     events_by_date = defaultdict(list)
@@ -134,25 +140,23 @@ def calendar():
         date = event["start"]
         events_by_date[date].append(event)
 
-    now = datetime.now()
-    year = now.year
-    month = now.month
-    num_days = calendar_lib.monthrange(year, month)[1]
-
-    all_days = [
-        datetime(year, month, day)
-        for day in range(1, num_days + 1)
+    # Tworzymy dni w przyszłości (od dziś do roku wprzód)
+    future_days = [
+        (today + timedelta(days=i)).strftime("%Y-%m-%d")
+        for i in range(366)
     ]
 
-    # Rozdzielamy na przeszłe i przyszłe dni
-    past_days = [day.strftime("%Y-%m-%d") for day in all_days if day.date() < now.date()]
-    future_days = [day.strftime("%Y-%m-%d") for day in all_days if day.date() >= now.date()]
+    # Przeszłe dni od dziś wstecz do roku temu (w kolejności od najnowszego do najstarszego)
+    all_past_days = [
+        (today - timedelta(days=i)).strftime("%Y-%m-%d")
+        for i in range(1, 366)
+    ]
 
     return render_template(
         "calendar.html",
         events=events,
         events_by_date=events_by_date,
-        past_days=past_days,
         future_days=future_days,
+        all_past_days=all_past_days,
         user=current_user
     )

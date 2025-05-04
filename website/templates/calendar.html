@@ -9,47 +9,49 @@
 
 <div id="calendar"></div>
 
-<div id="task-list">
 
-  <button id="toggle-past-days" onclick="togglePastDays()">Pokaż wcześniejsze dni</button>
+<button id="toggle-past-days" onclick="togglePastDays()">Pokaż wcześniejsze dni</button>
+<button id="toggle-more-past-days" onclick="showMorePastDays()" style="display: none;">Pokaż więcej poprzednich dni</button>
 
-  <div id="past-days" style="display: none;">
-    {% for day in past_days %}
-      <div class="task-day" id="day-{{ day }}">
-        <h4>{{ day }}</h4>
-        <ul>
-          {% if events_by_date[day] %}
-            {% for event in events_by_date[day] %}
-              <li>{{ event.title }}</li>
-            {% endfor %}
-          {% else %}
-            <li>Brak zadań</li>
-          {% endif %}
-        </ul>
-        <button onclick="addTask('{{ day }}')">Dodaj zadanie</button>
-      </div>
-    {% endfor %}
-  </div>
-
-  <div id="future-days">
-    {% for day in future_days %}
-      <div class="task-day" id="day-{{ day }}">
-        <h4>{{ day }}</h4>
-        <ul>
-          {% if events_by_date[day] %}
-            {% for event in events_by_date[day] %}
-              <li>{{ event.title }}</li>
-            {% endfor %}
-          {% else %}
-            <li>Brak zadań</li>
-          {% endif %}
-        </ul>
-        <button onclick="addTask('{{ day }}')">Dodaj zadanie</button>
-      </div>
-    {% endfor %}
-  </div>
-
+<div id="past-days" style="display: none;">
+  {% for day in all_past_days %}
+    <div class="day past-day" id="day-{{ day }}" style="{% if loop.index > 10 %}display: none;{% endif %}">
+      <h4>{{ day }}</h4>
+      <ul>
+        {% if events_by_date[day] %}
+          {% for event in events_by_date[day] %}
+            <li>{{ event.title }}</li>
+          {% endfor %}
+        {% else %}
+          <li>Brak zadań</li>
+        {% endif %}
+      </ul>
+    </div>
+  {% endfor %}
 </div>
+
+
+
+<div id="future-days">
+  {% for day in future_days %}
+    <div class="day" id="day-{{ day }}">
+      <h4>{{ day }}</h4>
+      <ul>
+        {% if events_by_date[day] %}
+          {% for event in events_by_date[day] %}
+            <li>{{ event.title }}</li>
+          {% endfor %}
+        {% else %}
+          <li>Brak zadań</li>
+        {% endif %}
+      </ul>
+      <button onclick="addTask('{{ day }}')">Dodaj zadanie</button>
+    </div>
+  {% endfor %}
+</div>
+
+
+ </div>
 
 <script>
   document.addEventListener('DOMContentLoaded', function () {
@@ -75,18 +77,39 @@
     calendar.render();
   });
 
-  function togglePastDays() {
-    var pastDays = document.getElementById('past-days');
-    var toggleButton = document.getElementById('toggle-past-days');
-    if (pastDays.style.display === 'none') {
-      pastDays.style.display = 'block';
-      toggleButton.textContent = 'Ukryj wcześniejsze dni';
-    } else {
-      pastDays.style.display = 'none';
-      toggleButton.textContent = 'Pokaż wcześniejsze dni';
-    }
+  let pastVisibleCount = 10;
+
+function togglePastDays() {
+  const pastDays = document.getElementById('past-days');
+  const toggleButton = document.getElementById('toggle-past-days');
+  const moreButton = document.getElementById('toggle-more-past-days');
+
+  if (pastDays.style.display === 'none') {
+    pastDays.style.display = 'block';
+    toggleButton.textContent = 'Ukryj wcześniejsze dni';
+    moreButton.style.display = 'inline-block';
+  } else {
+    pastDays.style.display = 'none';
+    toggleButton.textContent = 'Pokaż wcześniejsze dni';
+    moreButton.style.display = 'none';
+  }
+}
+
+function showMorePastDays() {
+  const allPastDays = document.querySelectorAll('.past-day');
+  const total = allPastDays.length;
+  const nextCount = pastVisibleCount + 10;
+
+  for (let i = pastVisibleCount; i < nextCount && i < total; i++) {
+    allPastDays[i].style.display = 'block';
   }
 
+  pastVisibleCount = nextCount;
+
+  if (pastVisibleCount >= total) {
+    document.getElementById('toggle-more-past-days').style.display = 'none';
+  }
+}
   function addTask(date) {
     alert('Dodaj zadanie do dnia: ' + date);
     // Można tu zrobić redirect albo popup
