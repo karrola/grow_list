@@ -117,7 +117,7 @@ def delete_task():
     
     return jsonify({})
 
-@views.route("/calendar")
+@views.route("/calendar", methods=['POST', 'GET'])
 def calendar():
     # Ustalamy zakres dat: od dziś do roku w przód
     today = datetime.now().date()
@@ -140,23 +140,26 @@ def calendar():
         date = event["start"]
         events_by_date[date].append(event)
 
-    # Tworzymy dni w przyszłości (od dziś do roku wprzód)
-    future_days = [
-        (today + timedelta(days=i)).strftime("%Y-%m-%d")
-        for i in range(366)
+    # Zakres od roku temu do roku wprzód
+    today = datetime.now().date()
+    start_date = today - timedelta(days=365)
+    end_date = today + timedelta(days=365)
+
+    all_days = [
+        start_date + timedelta(days=i)
+        for i in range((end_date - start_date).days + 1)
     ]
 
-    # Przeszłe dni od dziś wstecz do roku temu (w kolejności od najnowszego do najstarszego)
-    all_past_days = [
-        (today - timedelta(days=i)).strftime("%Y-%m-%d")
-        for i in range(1, 366)
-    ]
+    # past_days = wszystkie dni < dziś, w kolejności od najstarszego do najnowszego
+    past_days = [day.strftime("%Y-%m-%d") for day in all_days if day < today]
+    # future_days tak samo, ale >= dziś
+    future_days = [day.strftime("%Y-%m-%d") for day in all_days if day >= today]
 
     return render_template(
         "calendar.html",
         events=events,
         events_by_date=events_by_date,
         future_days=future_days,
-        all_past_days=all_past_days,
+        past_days=past_days,
         user=current_user
     )

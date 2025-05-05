@@ -14,8 +14,10 @@
 <button id="toggle-more-past-days" onclick="showMorePastDays()" style="display: none;">Pokaż więcej poprzednich dni</button>
 
 <div id="past-days" style="display: none;">
-  {% for day in all_past_days %}
-    <div class="day past-day" id="day-{{ day }}" style="{% if loop.index > 10 %}display: none;{% endif %}">
+  {% set total = past_days|length %}
+  {% for day in past_days %}
+    <div class="day past-day" id="day-{{ day }}"
+         style="{% if loop.index0 < total - 10 %}display: none;{% endif %}">
       <h4>{{ day }}</h4>
       <ul>
         {% if events_by_date[day] %}
@@ -30,9 +32,8 @@
   {% endfor %}
 </div>
 
-
-
 <div id="future-days">
+<hr>
   {% for day in future_days %}
     <div class="day" id="day-{{ day }}">
       <h4>{{ day }}</h4>
@@ -54,6 +55,8 @@
  </div>
 
 <script>
+
+
   document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -77,34 +80,39 @@
     calendar.render();
   });
 
-  let pastVisibleCount = 10;
+ 
 
-function togglePastDays() {
-  const pastDays = document.getElementById('past-days');
-  const toggleButton = document.getElementById('toggle-past-days');
-  const moreButton = document.getElementById('toggle-more-past-days');
-
-  if (pastDays.style.display === 'none') {
-    pastDays.style.display = 'block';
-    toggleButton.textContent = 'Ukryj wcześniejsze dni';
-    moreButton.style.display = 'inline-block';
-  } else {
-    pastDays.style.display = 'none';
-    toggleButton.textContent = 'Pokaż wcześniejsze dni';
-    moreButton.style.display = 'none';
+  function togglePastDays() {
+    const pastDays = document.getElementById('past-days');
+    const toggleButton = document.getElementById('toggle-past-days');
+    const moreButton = document.getElementById('toggle-more-past-days');
+    if (pastDays.style.display === 'none') {
+      pastDays.style.display = 'block';
+      toggleButton.textContent = 'Ukryj wcześniejsze dni';
+      moreButton.style.display = 'inline-block';
+    } else {
+      pastDays.style.display = 'none';
+      toggleButton.textContent = 'Pokaż wcześniejsze dni';
+      moreButton.style.display = 'none';
+    }
   }
-}
+
+let pastVisibleCount = 10;
 
 function showMorePastDays() {
-  const allPastDays = document.querySelectorAll('.past-day');
-  const total = allPastDays.length;
-  const nextCount = pastVisibleCount + 10;
+  const allPast = Array.from(document.querySelectorAll('.past-day'));
+  const total = allPast.length;
 
-  for (let i = pastVisibleCount; i < nextCount && i < total; i++) {
-    allPastDays[i].style.display = 'block';
+  // Oblicz indeksy elementów, które mają się odsłonić:
+  // poprzednia paczka: od total-10-pastVisibleCount do total-pastVisibleCount-1
+  const start = Math.max(0, total - 10 - pastVisibleCount);
+  const end = total - pastVisibleCount;
+
+  for (let i = start; i < end; i++) {
+    allPast[i].style.display = 'block';
   }
 
-  pastVisibleCount = nextCount;
+  pastVisibleCount += (end - start);
 
   if (pastVisibleCount >= total) {
     document.getElementById('toggle-more-past-days').style.display = 'none';
