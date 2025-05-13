@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .models import User
+from .models import User, List
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
@@ -53,8 +53,14 @@ def sign_up():
         else:
             new_user = User(email=email, first_name=first_name, password=generate_password_hash(password1, method='pbkdf2:sha256'))
             db.session.add(new_user)
+            db.session.flush()
+
+            default_list = List(list_title="Skrzynka", user_id=new_user.id, is_default=True)
+            db.session.add(default_list)
+
             db.session.commit()
-            login_user(user, remember=True)
+
+            login_user(new_user, remember=True)
             flash('Account created!', category='success')
             return redirect(url_for('views.home'))
 

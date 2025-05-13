@@ -1,0 +1,50 @@
+.title {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.list-container {
+    max-width: 800px;
+    padding: 1rem;
+    margin: 2rem auto;
+}
+
+.list {
+    padding: 0;
+    margin-bottom: 0.7rem;
+}
+
+.item {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-content: baseline;
+    padding: 0.5rem 0;
+    list-style: none;
+    border-bottom: 1px solid #ddd;
+    width: 100%;
+}
+
+.list-title {
+    flex: 1;
+    margin: 0;
+    padding-bottom: 1px;
+    color: #212529 !important;
+}
+
+.close {
+    flex-shrink: 0;
+}
+
+/* dodawanie listy */
+.list-title-input {
+    border: none;
+    margin-bottom: 0.5rem;
+}
+
+.list-title-input:focus {
+    border-color: #6c757d;
+    border-radius: 0.175rem;
+    box-shadow: 0 0 0 0.1rem rgba(108, 117, 125, 0.25);
+    outline: none;
+}

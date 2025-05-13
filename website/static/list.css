@@ -1,0 +1,86 @@
+.list-title {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+/* lista zadań */
+.task-list {
+    max-width: 800px;
+    padding: 1rem;
+    margin: 2rem auto;
+}
+
+.tasks {
+    padding: 0;
+    margin-bottom: 0.7rem;
+}
+
+.task {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-content: baseline;
+    padding: 0.5rem 0;
+    list-style: none;
+    border-bottom: 1px solid #ddd;
+    width: 100%;
+}
+
+.form-check {
+    flex-shrink: 0;
+    margin-right: 6px;
+    padding: 0;
+}
+
+.task-data {
+    flex: 1;
+    margin: 0;
+    padding-bottom: 1px;
+}
+
+.task-deadline {
+    display: block;
+    margin-right: 1.5rem;
+}
+
+.fa-clock {
+    margin-left: 1rem;
+}
+
+.close {
+    flex-shrink: 0;
+}
+
+/* formularz dodawania zadania */
+.add-task-form {
+    border: 1px solid #ddd;
+    border-radius: 0.375rem;
+    padding: 0.5rem 0.49rem 0.7rem 0.49rem;
+}
+
+.task-data-input {
+    border: none;
+    margin-bottom: 0.5rem;
+}
+
+.task-data-input:focus {
+    outline: none;
+}
+
+.add-task-form .fa-solid {
+    margin-left: 0.3rem;
+    margin-right: 0.3rem;
+}
+
+.fa-solid .fa-hash {
+    margin-left: 0;
+}
+
+.submit-add-task-form-buttons {
+    margin-top: 0.9rem;
+}
+
+/* po kliknięciu "dodaj zadanie" scroll dnia do połowy okna*/
+.day {
+    scroll-margin-block-start: 50vh;
+}

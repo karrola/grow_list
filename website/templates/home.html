@@ -1,25 +1,45 @@
 {% extends "base.html" %}
 {% block title %}Home{% endblock %}
 
-{% block content%}
-<h1 align="center">Listy zadań</h1>
+{% block head %}
+<link href="{{ url_for('static', filename='home.css') }}" rel="stylesheet" />
+{% endblock %}
 
-<ul class="list-group list-group-flush" id="lists">
+{% block content%}
+<h2 class="title">Listy zadań</h2>
+
+<div class="list-container">
+<ul class="list" id="lists">
   {% for list in lists %}
-  <li class="list-group-item">
-    <a class="nav-item nav-link" id="list" href="{{ url_for('views.show_list', list_id=list.id) }}">{{ list.list_title }}</a>
-    <button type="button" class="close" onClick="deleteList({{ list.id }})">
-    <span aria-hidden="true">&times;</span>
+  <li class="item">
+    <a id="list" href="{{ url_for('views.show_list', list_id=list.id) }}" class="list-title">{{ list.list_title }}</a>
+    {% if not list.is_default %}
+      <button type="button" class="close" onClick="deleteList({{ list.id }})">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    {% endif %}
   </li>
   {% endfor %}
 </ul>
 
 <form method="POST">
-  <label for="list_title">Tytuł:</label>
-  <input type="text" name="list_title" id="list_title" value="" autocomplete="off" required>
+  <label for="list_title"></label>
+  <input type="text" name="list_title" id="list_title" class="list-title-input" value="" autocomplete="off" placeholder="Wpisz tytuł listy..." required>
   <br />
-  <div align="center">
-    <button type="submit" class="btn btn-primary">Add List</button>
+  <div>
+    <button type="submit" class="btn btn-outline-secondary btn-sm">Dodaj listę</button>
   </div>
 </form>
+</div>
+
+<script>
+  function deleteList(listId) {
+  fetch("/delete-list", {
+    method: "POST",
+    body: JSON.stringify({ listId: listId }),
+  }).then((_res) => {
+    window.location.href = "/home";
+  });
+}
+</script>
 {% endblock %}

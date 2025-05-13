@@ -7,56 +7,131 @@
 
 {% block content %}
 
+<!-- kalendarz -->
 <div id="calendar"></div>
 
+<!-- lista zadań pod kalendarzem -->
+<div class="task-list">
+  <button id="toggle-past-days" class="btn btn-outline-secondary btn-sm" onclick="togglePastDays()">Pokaż poprzednie dni</button>
+  <button id="toggle-more-past-days" class="btn btn-outline-secondary btn-sm" onclick="showMorePastDays()" style="display: none;">Pokaż więcej poprzednich dni</button>
 
-<button id="toggle-past-days" onclick="togglePastDays()">Pokaż wcześniejsze dni</button>
-<button id="toggle-more-past-days" onclick="showMorePastDays()" style="display: none;">Pokaż więcej poprzednich dni</button>
-
-<div id="past-days" style="display: none;">
-  {% set total = past_days|length %}
-  {% for day in past_days %}
-    <div class="day past-day" id="day-{{ day }}"
-         style="{% if loop.index0 < total - 10 %}display: none;{% endif %}">
-      <h4>{{ day }}</h4>
-      <ul>
-        {% if events_by_date[day] %}
-          {% for event in events_by_date[day] %}
-            <li>{{ event.title }}</li>
-          {% endfor %}
-        {% else %}
-          <li>Brak zadań</li>
+  <!-- przeszłe dni -->
+  <div id="past-days" style="display: none;">
+    {% set total = past_days|length %}
+    {% for iso, label in past_days %}
+      <div class="day past-day" id="day-{{ iso }}"
+          style="{% if loop.index0 < total - 10 %}display: none;{% endif %}">
+        <h5 class="day-name">{{ label }}</h5>
+        <ul class="tasks">
+          {% if tasks_by_date[iso] %}
+            {% for task in tasks_by_date[iso] if not task.if_done %}
+              <li class="task">
+                <form method="POST" action="{{ url_for('views.update_task_calendar', task_id=task.id) }}" class="form-check">
+                  <input type="checkbox" name="if_done" value="true" class="form-check-input" {% if task.if_done %}checked{% endif %} onchange="this.form.submit()">
+                </form>
+                <p class="task-data">{{ task.data }}</p>
+                <button type="button" class="close" onClick="deleteTask({{ task.id }})">
+                <span aria-hidden="true">&times;</span>
+                </button>
+              </li>
+            {% endfor %}
+            <div class="done-tasks" style="display: none;">
+            {% for task in tasks_by_date[iso] if task.if_done %}
+              <li class="task">
+                <form method="POST" action="{{ url_for('views.update_task_calendar', task_id=task.id) }}" class="form-check">
+                  <input type="checkbox" name="if_done" value="true" class="form-check-input" {% if task.if_done %}checked{% endif %} onchange="this.form.submit()">
+                </form>
+                <p class="task-data">{{ task.data }}</p>
+                <button type="button" class="close" onClick="deleteTask({{ task.id }})">
+                <span aria-hidden="true">&times;</span>
+                </button>
+              </li>
+            {% endfor %}
+            </div>
+          {% endif %}
+        </ul>
+        {% if tasks_by_date[iso] | selectattr("if_done") | list %}
+        <button type="button" id="show-done-tasks" class="btn btn-outline-secondary btn-sm" onclick="showDoneTasks(this)">Pokaż wykonane zadania</button>
         {% endif %}
-      </ul>
-    </div>
-  {% endfor %}
-</div>
+      </div>
+    {% endfor %}
+  </div>
 
-<div id="future-days">
-<hr>
-  {% for day in future_days %}
-    <div class="day" id="day-{{ day }}">
-      <h4>{{ day }}</h4>
-      <ul>
-        {% if events_by_date[day] %}
-          {% for event in events_by_date[day] %}
-            <li>{{ event.title }}</li>
+  <!-- dziś + przyszłe dni -->
+  <div id="future-days">
+    {% for iso, label in future_days %}
+      <div class="day future-day" id="day-{{ iso }}">
+        <h5 class="day-name">{{ label }}</h5>
+        <ul class="tasks">
+          {% if tasks_by_date[iso] %}
+            {% for task in tasks_by_date[iso] if not task.if_done %}
+              <li class="task">
+                <form method="POST" action="{{ url_for('views.update_task_calendar', task_id=task.id) }}" class="form-check">
+                  <input type="checkbox" name="if_done" value="true" class="form-check-input" {% if task.if_done %}checked{% endif %} onchange="this.form.submit()">
+                </form>
+                <p class="task-data">{{ task.data }}</p>
+                <button type="button" class="close" onClick="deleteTask({{ task.id }})">
+                <span aria-hidden="true">&times;</span>
+                </button>
+              </li>
+            {% endfor %}
+            <div class="done-tasks" style="display: none;">
+            {% for task in tasks_by_date[iso] if task.if_done %}
+              <li class="task">
+                <form method="POST" action="{{ url_for('views.update_task_calendar', task_id=task.id) }}" class="form-check">
+                  <input type="checkbox" name="if_done" value="true" class="form-check-input" {% if task.if_done %}checked{% endif %} onchange="this.form.submit()">
+                </form>
+                <p class="task-data">{{ task.data }}</p>
+                <button type="button" class="close" onClick="deleteTask({{ task.id }})">
+                <span aria-hidden="true">&times;</span>
+                </button>
+              </li>
+            {% endfor %}
+            </div>
+          {% endif %}
+        </ul>
+
+    <!-- przycisk "dodaj zadanie" i "pokaż wykonane zadania"-->
+    <button type="button" class="toggle-add-task-form btn btn-secondary btn-sm" data-date="{{ iso }}" onclick="addTaskForm(this)">Dodaj zadanie</button>
+    {% if tasks_by_date[iso] | selectattr("if_done") | list %}
+    <button type="button" id="show-done-tasks" class="btn btn-outline-secondary btn-sm" onclick="showDoneTasks(this)">Pokaż wykonane zadania</button>
+    {% endif %}
+    <!-- formularz dodawania zadania -->
+    <div class="add-task-form" style="display: none;">
+        <form method="POST">
+          <input type="text" name="task" id="task" class="task-data-input" autocomplete="off" placeholder="Wpisz treść zadania..." required><br />
+          <label for="list" class="text-muted"><i class="fa-solid fa-hashtag"></i></label>
+          <select name="list" id="list">
+          {% for list in user.lists %}
+            {% if list.is_default == True %}
+              <option value="{{ list.id }}" selected>{{ list.list_title }}</option>
+            {% else %}
+              <option value="{{ list.id }}">{{ list.list_title }}</option>
+            {% endif %}
           {% endfor %}
-        {% else %}
-          <li>Brak zadań</li>
-        {% endif %}
-      </ul>
-      <button onclick="addTask('{{ day }}')">Dodaj zadanie</button>
+          </select>
+          <span class="text-muted">
+            <i class="fa-solid fa-calendar-days"></i>
+            <input type="date" name="deadline_date" id="deadline_date" class="deadline-date">
+          </span>
+          <span class="text-muted">
+            <i class="fa-solid fa-clock"></i>
+            <input type="time" name="deadline_time" id="deadline_time" class="deadline-time">
+          </span>
+          <div class="submit-add-task-form-buttons">
+            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cancelTaskForm(this)">Anuluj</button>
+            <button type="submit" class="btn btn-primary btn-sm">Dodaj zadanie</button>
+          </div>
+        </form>
     </div>
-  {% endfor %}
+
+    {% endfor %}
+  </div>
 </div>
-
-
- </div>
 
 <script>
 
-
+  // inicjalizacja FullCalendar
   document.addEventListener('DOMContentLoaded', function () {
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -64,11 +139,17 @@
       locale: 'pl',
       firstDay: 1,
       headerToolbar: {
-        left: 'prev,next today',
+        left: 'prev today',
         center: 'title',
-        right: ''
+        right: 'next'
       },
+      buttonText: {
+      today: 'dziś'
+      },
+      contentHeight: 'auto',
+      fixedWeekCount: false,
       events: {{ events|tojson }},
+      eventDisplay: 'none',
       dateClick: function(info) {
         const dateId = 'day-' + info.dateStr;
         const target = document.getElementById(dateId);
@@ -80,49 +161,89 @@
     calendar.render();
   });
 
- 
-
+  // pokaż poprzednie dni
   function togglePastDays() {
     const pastDays = document.getElementById('past-days');
     const toggleButton = document.getElementById('toggle-past-days');
     const moreButton = document.getElementById('toggle-more-past-days');
+
     if (pastDays.style.display === 'none') {
       pastDays.style.display = 'block';
-      toggleButton.textContent = 'Ukryj wcześniejsze dni';
+      toggleButton.textContent = 'Ukryj poprzednie dni';
       moreButton.style.display = 'inline-block';
     } else {
       pastDays.style.display = 'none';
-      toggleButton.textContent = 'Pokaż wcześniejsze dni';
+      toggleButton.textContent = 'Pokaż poprzednie dni';
       moreButton.style.display = 'none';
     }
   }
 
-let pastVisibleCount = 10;
+  // pokaż więcej poprzednich dni
+  let pastVisibleCount = 10;
+  
+  function showMorePastDays() {
+    const allPast = Array.from(document.querySelectorAll('.past-day'));
+    const total = allPast.length;
+    const start = Math.max(0, total - 10 - pastVisibleCount);
+    const end = total - pastVisibleCount;
 
-function showMorePastDays() {
-  const allPast = Array.from(document.querySelectorAll('.past-day'));
-  const total = allPast.length;
+    for (let i = start; i < end; i++) {
+      allPast[i].style.display = 'block';
+    }
 
-  // Oblicz indeksy elementów, które mają się odsłonić:
-  // poprzednia paczka: od total-10-pastVisibleCount do total-pastVisibleCount-1
-  const start = Math.max(0, total - 10 - pastVisibleCount);
-  const end = total - pastVisibleCount;
+    pastVisibleCount += (end - start);
 
-  for (let i = start; i < end; i++) {
-    allPast[i].style.display = 'block';
+    if (pastVisibleCount >= total) {
+      document.getElementById('toggle-more-past-days').style.display = 'none';
+    }
   }
 
-  pastVisibleCount += (end - start);
+  // formularz dodawania zadania
+  function addTaskForm(button) {
+    const formContainer = button.nextElementSibling;            // <div class="add-task-form">
+    const form = formContainer.querySelector('form');
+    const dateInput = form.querySelector('input[type="date"]');
+    const selectedDate = button.getAttribute('data-date');
 
-  if (pastVisibleCount >= total) {
-    document.getElementById('toggle-more-past-days').style.display = 'none';
+    // ukryj wszystkie formularze i pokaż ich przyciski "Dodaj zadanie"
+    document.querySelectorAll('.add-task-form').forEach(fc => fc.style.display = 'none');
+    document.querySelectorAll('.toggle-add-task-form').forEach(btn => btn.style.display = 'inline-block');
+
+    // pokaż tylko wybrany formularz
+    formContainer.style.display = 'block';
+    button.style.display = 'none'; // ukryj przycisk
+
+    if (!dateInput.value) dateInput.value = selectedDate;
+
+    // scroll do formularza na środek
+    formContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
-}
-  function addTask(date) {
-    alert('Dodaj zadanie do dnia: ' + date);
-    // Można tu zrobić redirect albo popup
-    // window.location.href = `/add-task?date=${date}`;
+
+  // anulowanie dodawania zadania
+  function cancelTaskForm(button) {
+    const form = button.closest('form');
+    const formContainer = form.parentElement;
+    const toggleButton = formContainer.previousElementSibling;
+
+    form.reset();
+    formContainer.style.display = 'none';
+    toggleButton.style.display = 'inline-block'; // pokaż przycisk "Dodaj zadanie"
   }
+
+  // pokaż/ukryj wykonane zadania
+  function showDoneTasks(button) {
+    const dayContainer = button.closest('.day');
+    const doneTasks = dayContainer.querySelector('.done-tasks');
+
+    if (doneTasks.style.display === 'none') {
+      doneTasks.style.display = 'block';
+      button.textContent = 'Ukryj wykonane zadania';
+    } else {
+      doneTasks.style.display = 'none';
+      button.textContent = 'Pokaż wykonane zadania';
+    }
+  }
+
 </script>
 
 {% endblock %}
