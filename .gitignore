@@ -1,0 +1,18 @@
+# Środowisko wirtualne
+venv/
+
+# Pliki bazy danych SQLite
+*.sqlite3
+*.db
+
+# Pliki Pythona skompilowane
+__pycache__/
+*.pyc
+
+# Pliki konfiguracyjne edytorów i systemu
+.vscode/
+.idea/
+.DS_Store
+
+# Plik z sekretami (np. hasła)
+.env
