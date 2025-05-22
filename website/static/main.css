@@ -1,0 +1,26 @@
+.plant-container{
+    display: none;
+}
+
+.wrapper{
+    grid-template-columns: 1fr;
+}
+
+.main-content{
+    margin: 0 auto;
+    text-align: center;
+}
+
+.logo{
+    display: block;
+    margin-top: 4rem;
+    margin-bottom: 4rem;
+}
+
+h4{
+    margin-top: 1.5rem;
+}
+
+button{
+    margin-top: 0.4rem;
+}

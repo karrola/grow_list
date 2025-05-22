@@ -1,16 +1,25 @@
 {% extends "base.html" %}
-{% block title %}nazwa{% endblock %}
 
+{% block head %}
+<link href="{{ url_for('static', filename='main.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block title %}Grow List{% endblock %}
+
+{% block nav %}{% endblock %}
 {% block content %}
 
-    <h1>Nie masz jeszcze konta?</h1>
+    <img src="{{ url_for('static', filename='logo.png') }}" class="logo" alt="logo">
+    <h4>Nie masz jeszcze konta?</h4>
     <a class="nav-item nav-link" id="signUp" href="/sign-up">
-    <button type="button" class="btn btn-primary">Zarejestruj się</button>
+    <button type="button" class="btn btn-outline-secondary">Zarejestruj się</button>
     </a>
     
-    <h1>Masz już konto?</h1>
+    <h4>Masz już konto?</h4>
     <a class="nav-item nav-link" id="login" href="/login">
     <button type="button" class="btn btn-primary">Zaloguj się</button>
     </a>
     
 {% endblock %}
+
+{% block plant %}{% endblock %}

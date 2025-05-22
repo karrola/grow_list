@@ -87,6 +87,22 @@
   padding-bottom: 1px;
 }
 
+.task-info {
+    display: flex;
+    align-items: center;
+    margin-right: 1rem;
+    font-size: 0.8rem;
+}
+
+.task-info .fa-solid {
+    margin-left: 1rem;
+    margin-right: 0.4rem;
+}
+
+.task-info .fa-bell {
+    margin-right: 0;
+}
+
 .close {
   flex-shrink: 0;
 }
@@ -95,6 +111,7 @@
 .add-task-form {
   border: 1px solid #ddd;
   border-radius: 0.375rem;
+  margin-top: 0.7rem;
   padding: 0.5rem 0.49rem 0.7rem 0.49rem;
 }
 

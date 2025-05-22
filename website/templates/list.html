@@ -18,6 +18,7 @@
     <span class="task-deadline text-muted">
     <i class="fa-solid fa-calendar-days"></i> {{ task.deadline_date.strftime('%d.%m.%Y') if task.deadline_date else '-' }}
     <i class="fa-solid fa-clock"></i> {{ task.deadline_time.strftime('%H:%M') if task.deadline_time else '-' }}
+    {% if task.reminder %} <i class="fa-solid fa-bell"></i> {% endif %}
     </span>
     <button type="button" class="close" onClick="deleteTask({{ task.id }})">
     <span aria-hidden="true">&times;</span>
@@ -45,6 +46,8 @@
         <i class="fa-solid fa-clock"></i>
         <input type="time" name="deadline_time" id="deadline_time" class="deadline-time">
       </span>
+      <label for="reminder" class="text-muted"><i class="fa-solid fa-bell"></i></label>
+      <input type="checkbox" name="reminder" id="reminder">
       <div class="submit-add-task-form-buttons">
         <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cancelTaskForm(this)">Anuluj</button>
         <button type="submit" class="btn btn-primary btn-sm">Dodaj zadanie</button>
@@ -68,6 +71,7 @@
     <span class="task-deadline text-muted">
     <i class="fa-solid fa-calendar-days"></i> {{ task.deadline_date.strftime('%d.%m.%Y') if task.deadline_date else '-' }}
     <i class="fa-solid fa-clock"></i> {{ task.deadline_time.strftime('%H:%M') if task.deadline_time else '-' }}
+    {% if task.reminder %} <i class="fa-solid fa-bell"></i> {% endif %}
     </span>
     <button type="button" class="close" onClick="deleteTask({{ task.id }})">
       <span aria-hidden="true">&times;</span>
@@ -86,33 +90,38 @@
       window.history.replaceState(null, "", window.location.pathname);
     }
   });
+
   // formularz dodawania zadania
   function addTaskForm(button) {
-    const formContainer = document.getElementById('add-task-form');            // <div class="add-task-form">
-
-    formContainer.style.display = 'block';
-    button.style.display = 'none'; // ukryj przycisk
-
+    const formContainer = document.getElementById('add-task-form'); // kontener formularza
+    
+    formContainer.style.display = 'block';        // pokaż formularz
+    button.style.display = 'none';                 // ukryj przycisk "Dodaj zadanie"
+    
     // scroll do formularza na środek
     formContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
+
   // anulowanie dodawania zadania
   function cancelTaskForm(button) {
     const form = button.closest('form');
     const formContainer = form.parentElement;
-    const toggleButton = formContainer.previousElementSibling;
-
+    
     form.reset();
-    formContainer.style.display = 'none';
-    toggleButton.style.display = 'inline-block'; // pokaż przycisk "Dodaj zadanie"
+    formContainer.style.display = 'none';          // ukryj formularz
+
+    // pokaż przycisk "Dodaj zadanie"
+    const addTaskButton = document.querySelector('.toggle-add-task-form');
+    if (addTaskButton) {
+      addTaskButton.style.display = 'inline-block';
+    }
   }
 
   // pokaż/ukryj wykonane zadania
-    // pokaż/ukryj wykonane zadania
   function showDoneTasks(button) {
     const doneTasks = document.getElementById('done-tasks');
 
-    if (doneTasks.style.display === 'none') {
+    if (doneTasks.style.display === 'none' || doneTasks.style.display === '') {
       doneTasks.style.display = 'block';
       button.textContent = 'Ukryj wykonane zadania';
     } else {

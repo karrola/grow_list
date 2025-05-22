@@ -50,6 +50,7 @@
   <!-- kontent -->
   <div class="wrapper">
     <!-- nawigacja -->
+    {% block nav %}
     <nav class="navbar navbar-dark bg-dark">
       {% if user.is_authenticated %}
         <div class="user">
@@ -72,21 +73,22 @@
         <div class="logout">
           <button class="nav-button nav-button--logout"><a class="link" id="logout" href="/logout"><i class="fa-solid fa-arrow-right-from-bracket"></i>Wyloguj się</a></button>
         </div>
-      {% else %}
-        <button class="nav-button"><a class="link" id="login" href="/login">Zaloguj się</a></button>
-        <button class="nav-button"><a class="link" id="signUp" href="/sign-up">Zarejestruj się</a></button>
       {% endif %}
     </nav>
+    {% endblock %}
 
     <!-- głowny kontent -->
+    
     <main class="main-content">
-      {% block content %} {% endblock %}
+    {% block content %}{% endblock %}
     </main>
+    
 
     <!-- box z rośliną -->
     <div class="plant-container">
-      {% block plant %} {% endblock %}
+    {% block plant %}{% endblock %}
     </div>
+    
   </div>
 
   <!-- bootstrap -->

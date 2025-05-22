@@ -1,0 +1,40 @@
+.plant-container{
+    display: none;
+}
+
+.wrapper{
+    grid-template-columns: 1fr;
+}
+
+.main-content{
+    width: 100%;
+}
+
+form{
+    margin: 0 auto;
+    max-width: 570px;
+}
+
+h3{
+    display: block;
+    width: fit-content;
+    margin: 3rem auto 3rem auto; 
+}
+
+.signup{
+    display: block !important; 
+    width: fit-content;
+    margin: 0.7rem auto 0 auto;
+}
+
+.login{
+    display: block !important; 
+    width: fit-content;
+    margin: 0.5rem auto 0 auto;
+}
+
+p{
+    display: block !important; 
+    width: fit-content;
+    margin: 4rem auto 0 auto;
+}

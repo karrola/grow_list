@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for, make_response
+from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for, make_response, current_app
 from flask_login import login_required, current_user
 from .models import List, Task
 from . import db
@@ -7,6 +7,8 @@ from datetime import datetime, timedelta, date
 from collections import defaultdict
 import calendar as calendar_lib
 import locale
+from flask_mail import Message
+from . import mail
 
 
 views = Blueprint('views', __name__)
@@ -60,22 +62,32 @@ def show_list(list_id):
     
     if request.method == 'POST':
         task_data = request.form.get('task', '').strip()
+        reminder = request.form.get('reminder')
 
         if not task_data:
             flash('Too short!', category='error')
         else:
-            if request.form.get('deadline_date') and request.form.get('deadline_time'):
-                deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
-                deadline_time = datetime.strptime(request.form.get('deadline_time'), '%H:%M').time()
-                new_task = Task(data=task_data, list_id=current_list.id, user_id=current_user.id, deadline_date = deadline_date, deadline_time = deadline_time)
-            elif request.form.get('deadline_date') and not request.form.get('deadline_time'):
-                deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
-                new_task = Task(data=task_data, list_id=current_list.id, user_id=current_user.id, deadline_date = deadline_date)
-            elif request.form.get('deadline_time') and not request.form.get('deadline_date'):
-                flash('Wybierz datę, aby móc ustawić godzinę!', category='error')
-                return redirect(url_for('views.show_list', list_id=list_id), code=303)
+            if reminder:
+                if request.form.get('deadline_date') and request.form.get('deadline_time'):
+                    deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
+                    deadline_time = datetime.strptime(request.form.get('deadline_time'), '%H:%M').time()
+                    new_task = Task(data=task_data, list_id=list_id, user_id=current_user.id, deadline_date = deadline_date, deadline_time = deadline_time, reminder = True)
+                else:
+                    flash('Wybierz datę i godzinę, aby móc otrzymać przypomnienie!', category='error')
+                    return redirect(url_for('views.show_list', list_id=list_id), code=303)   
             else:
-                new_task = Task(data=task_data, list_id=current_list.id, user_id=current_user.id)
+                if request.form.get('deadline_date') and request.form.get('deadline_time'):
+                    deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
+                    deadline_time = datetime.strptime(request.form.get('deadline_time'), '%H:%M').time()
+                    new_task = Task(data=task_data, list_id=list_id, user_id=current_user.id, deadline_date = deadline_date, deadline_time = deadline_time)
+                elif request.form.get('deadline_date') and not request.form.get('deadline_time'):
+                    deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
+                    new_task = Task(data=task_data, list_id=list_id, user_id=current_user.id, deadline_date = deadline_date)
+                elif request.form.get('deadline_time') and not request.form.get('deadline_date'):
+                    flash('Wybierz datę, aby móc ustawić godzinę!', category='error')
+                    return redirect(url_for('views.show_list', list_id=list_id), code=303)
+                else:
+                    new_task = Task(data=task_data, list_id=list_id, user_id=current_user.id)
 
             db.session.add(new_task)
             db.session.commit()
@@ -181,7 +193,7 @@ def calendar():
     future_days = []
     for day_obj in all_days:
         iso = day_obj.strftime("%Y-%m-%d")
-        label = format_date_pretty(day_obj)      # np. "8 maj, czwartek"
+        label = format_date_pretty(day_obj)
         if day_obj < today:
             past_days.append((iso, label))
         else:
@@ -190,22 +202,32 @@ def calendar():
     if request.method == 'POST':
         task_data = request.form.get('task', '').strip()
         list_id = request.form.get('list')
+        reminder = request.form.get('reminder')
 
         if not task_data:
             flash('Too short!', category='error')
         else:
-            if request.form.get('deadline_date') and request.form.get('deadline_time'):
-                deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
-                deadline_time = datetime.strptime(request.form.get('deadline_time'), '%H:%M').time()
-                new_task = Task(data=task_data, list_id=list_id, user_id=current_user.id, deadline_date = deadline_date, deadline_time = deadline_time)
-            elif request.form.get('deadline_date') and not request.form.get('deadline_time'):
-                deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
-                new_task = Task(data=task_data, list_id=list_id, user_id=current_user.id, deadline_date = deadline_date)
-            elif request.form.get('deadline_time') and not request.form.get('deadline_date'):
-                flash('Wybierz datę, aby móc ustawić godzinę!', category='error')
-                return redirect(url_for('views.calendar'), code=303)
+            if reminder:
+                if request.form.get('deadline_date') and request.form.get('deadline_time'):
+                    deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
+                    deadline_time = datetime.strptime(request.form.get('deadline_time'), '%H:%M').time()
+                    new_task = Task(data=task_data, list_id=list_id, user_id=current_user.id, deadline_date = deadline_date, deadline_time = deadline_time, reminder = True)
+                else:
+                    flash('Wybierz datę i godzinę, aby móc otrzymać przypomnienie!', category='error')
+                    return redirect(url_for('views.calendar'), code=303)   
             else:
-                new_task = Task(data=task_data, list_id=list_id, user_id=current_user.id)
+                if request.form.get('deadline_date') and request.form.get('deadline_time'):
+                    deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
+                    deadline_time = datetime.strptime(request.form.get('deadline_time'), '%H:%M').time()
+                    new_task = Task(data=task_data, list_id=list_id, user_id=current_user.id, deadline_date = deadline_date, deadline_time = deadline_time)
+                elif request.form.get('deadline_date') and not request.form.get('deadline_time'):
+                    deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
+                    new_task = Task(data=task_data, list_id=list_id, user_id=current_user.id, deadline_date = deadline_date)
+                elif request.form.get('deadline_time') and not request.form.get('deadline_date'):
+                    flash('Wybierz datę, aby móc ustawić godzinę!', category='error')
+                    return redirect(url_for('views.calendar'), code=303)
+                else:
+                    new_task = Task(data=task_data, list_id=list_id, user_id=current_user.id)
 
         db.session.add(new_task)
         db.session.commit()
@@ -221,3 +243,33 @@ def calendar():
         past_days=past_days,
         user=current_user
     )
+
+def send_email(to, subject, body):
+    msg = Message(subject, sender="growlist@example.com", recipients=[to])
+    msg.body = body
+    mail.send(msg)
+
+
+def check_tasks_and_send_emails():
+    with current_app.app_context():
+        now = datetime.now()
+        deadline_limit = now + timedelta(hours=24)
+
+        tasks = Task.query.all()
+        for task in tasks:
+            if task.deadline_date and task.deadline_time:
+                deadline_dt = datetime.combine(
+                    task.deadline_date,
+                    task.deadline_time
+                )
+
+                if now <= deadline_dt <= deadline_limit and task.reminder and not task.reminder_sent:
+                    send_email(
+                        task.user.email,
+                        "Przypomnienie - dziś mija termin twojego zadania!",
+                        f"Przypominamy, twoje zadanie {task.data} ma ustawiony deadline na {deadline_dt.strftime('%Y-%m-%d %H:%M')}."
+                    )
+                    task.reminder_sent = True
+
+        db.session.commit()
+        

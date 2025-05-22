@@ -1,27 +1,38 @@
 {% extends "base.html" %}
 {% block title %}Sign Up{% endblock %}
 
+{% block head %}
+<link href="{{ url_for('static', filename='sign_up.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block nav %}{% endblock %}
+
 {% block content%}
 <form method="POST">
-    <h3>Sign Up</h3>
+    <h3>Rejestracja</h3>
     <div class="form-group">
-        <label for="email">Email:</label>
-        <input type="email" class="form-control" id="email" name="email" placeholder="xyz@example.com">
+        <label for="email">E-mail:</label>
+        <input type="email" class="form-control" id="email" name="email" placeholder="Wpisz swój e-mail..." required>
     </div>
     <div class="form-group">
-        <label for="firstName">Name:</label>
-        <input type="text" class="form-control" id="firstName" name="firstName" placeholder="xyz">
+        <label for="firstName">Nazwa użytkownika:</label>
+        <input type="text" class="form-control" id="firstName" name="firstName" placeholder="Wpisz swoją nazwę użytkownika..." required>
     </div>
     <div class="form-group">
-        <label for="password1">Password:</label>
-        <input type="password" class="form-control" id="password1" name="password1">
+        <label for="password1">Hasło:</label>
+        <input type="password" class="form-control" id="password1" name="password1" placeholder="Wpisz swoje hasło..." required>
     </div>
     <div class="form-group">
-        <label for="password2">Password (confirm):</label>
-        <input type="password" class="form-control" id="password2" name="password2">
+        <label for="password2">Potwierdź hasło:</label>
+        <input type="password" class="form-control" id="password2" name="password2" placeholder="Potwierdź swoje hasło..." required>
     </div>
     <br>
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" class="btn btn-primary signup">Zarejestruj się</button>
+
+    <p>Masz już konto?</p>
+    <a class="nav-item nav-link" id="login" href="/login">
+    <button type="button" class="btn btn-outline-secondary btn-sm login">Zaloguj się</button>
+    </a>
     
 </form>
 {% endblock %}
