@@ -53,7 +53,7 @@ def create_app():
         return User.query.get(int(id))
     
     from .scheduler import start_scheduler
-    start_scheduler(app)
+    #start_scheduler(app)
 
     return app
 
