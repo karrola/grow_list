@@ -1,6 +1,7 @@
 from . import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
+from datetime import datetime
 
 class List(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -15,6 +16,11 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(150))
     first_name = db.Column(db.String(100))
     lists = db.relationship('List', backref='user', cascade='all, delete-orphan', lazy=True)
+    water_points = db.Column(db.Integer, default=0)
+    plant_growth = db.Column(db.Integer, default=0)
+    plant_last_watered = db.Column(db.DateTime)
+    plants = db.relationship('Plant', backref='owner', lazy=True)
+    daily_task_goal = db.Column(db.Integer, default=1)
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -27,3 +33,10 @@ class Task(db.Model):
     deadline_time = db.Column(db.Time, nullable=True, default = None)
     reminder = db.Column(db.Boolean, default=False)
     reminder_sent = db.Column(db.Boolean, default=False)
+    first_check = db.Column(db.Boolean, default=False)
+
+class Plant(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    finished_at = db.Column(db.DateTime)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

@@ -32,14 +32,14 @@
   {% with messages = get_flashed_messages(with_categories=true) %} {% if
     messages %} {% for category, message in messages %} {% if category ==
     'error' %}
-    <div class="alert alert-danger alert-dismissable fade show" role="alert">
+    <div class="alert alert-danger alert-dismissable fade show" role="alert" style="position: absolute; top: 0; left: 0; z-index: 2; width: 100vw">
       {{ message }}
       <button type="button" class="close" data-dismiss="alert">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
     {% else %}
-    <div class="alert alert-success alert-dismissable fade show" role="alert">
+    <div class="alert alert-success alert-dismissable fade show" role="alert" style="position: absolute; top: 0; left: 0; z-index: 2; width: 100vw">
       {{ message }}
       <button type="button" class="close" data-dismiss="alert">
         <span aria-hidden="true">&times;</span>
@@ -57,6 +57,7 @@
           <p class="user-name"><i class="fa-regular fa-circle-user"></i>{{user.first_name}}</p>
         </div>
         <div class="nav">
+          <div class="daily-goal"><i class="fa-solid fa-bullseye"></i>Dzienny cel: {{user.daily_task_goal}}</div>
           <div class=" nav-main">
             <button class="nav-button"><a class="link" id="home" href="/calendar"><i class="fa-solid fa-calendar"></i>Kalendarz</a></button>
             {% for list in user.lists if list.is_default %}
@@ -85,8 +86,46 @@
     
 
     <!-- box z rośliną -->
+     
     <div class="plant-container">
-    {% block plant %}{% endblock %}
+      {% if user.is_authenticated %}
+      <p>Woda: {{ user.water_points }}</p>
+      <p>Wzrost: {{ user.plant_growth }}</p>
+
+      {% if user.plant_growth < 2*user.daily_task_goal %}
+        <img src="{{ url_for('static', filename='images/plant_1.png') }}" class="plant-img" alt="1. faza rozwoju roślinki">
+      {% elif user.plant_growth < 4*user.daily_task_goal %}
+        <img src="{{ url_for('static', filename='images/plant_2.png') }}" class="plant-img" alt="2. faza rozwoju roślinki">
+      {% elif user.plant_growth < 6*user.daily_task_goal %}
+        <img src="{{ url_for('static', filename='images/plant_3.png') }}" class="plant-img" alt="3. faza rozwoju roślinki">
+      {% else %}
+        <img src="{{ url_for('static', filename='images/plant_4.png') }}" class="plant-img" alt="4. faza rozwoju roślinki">
+        <form method="POST" action="{{ url_for('views.put_plant_on_shelf') }}">
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <button type="submit">Odstaw roślinkę na półkę</button>
+        </form>
+      {% endif %}
+      {% if user.plant_growth < 6*user.daily_task_goal %}
+      <form method="POST" action="{{ url_for('views.water_plant') }}">
+      <input type="hidden" name="next" value="{{ request.path }}">
+      <button type="submit">Podlej</button>
+      {% endif %}
+      </form>
+
+      <button type="button" id="show-info" onclick="showInfo(this)">Pokaż jak hodować roślinkę</button>
+
+      <div id="info" style="display: none;">Hodowla Twojej roślinki:
+        1. Każdego dnia musisz dostarczyć jej minimum x punktów wody.
+        2. Twoja roślinka ma 4 stadia wzrostu:
+          - kiełek - dostacz jej x punktów wody, aby osiągnęła kolejne stadium
+          - młode listki - dostarcz jej 2x punktów wody, aby osiągnęła kolejne stadium
+          - całkiem dużo listków - dostarcz jej 2x punktów wody, aby osiągnęła kolejne stadium
+          - piękny okaz - gratulacje, udało ci się wyhodować piękny okaz! Twoja roślinka jest gotowa by dumnie stanąć na parapecie - będzie tam bezpieczna (nie grozi jej już uschnięcie) - możesz zająć się hodowlą kolejnej.
+        3. Gdy przez 2 dni nie dostarczysz roślince odpowiedniej ilości wody, nic się nie stanie.
+        4. Trzeciego dnia bez wody roślinka zacznie usychać, a piątego - będzie już kompletnie uschnięta.
+        5. Roślinki, która uschła, niestety nie da się uratować :c Trafi na parapet razem z innymi, a ty dostaniesz kolejną roślinkę - ale opiekuj się nią dobrze!
+      </div>
+      {% endif %}
     </div>
     
   </div>
@@ -127,6 +166,18 @@
         });
       }, 2000);
     });
+  function showInfo() {
+    const button = document.getElementById('show-info');
+    const info = document.getElementById('info');
+
+    if (info.style.display === 'none') {
+      info.style.display = 'block';
+      button.textContent = 'Ukryj jak hodować roślinkę';
+    } else {
+      info.style.display = 'none';
+      button.textContent = 'Pokaż jak hodować roślinkę';
+    }
+  }
   </script>
 
   </body>

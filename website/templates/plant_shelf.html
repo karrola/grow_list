@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Półka{% endblock %}
+{% block head %}
+<link href="{{ url_for('static', filename='list.css') }}" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+<h2 class="list-title"> Moja półka </h2>
+
+<div>
+<ul class="plants" id="plants">
+  {% for plant in plants %}
+  <li class="plant">{{ plant.finished_at }}</li>
+  {% endfor %}
+</div>
+{% endblock %}

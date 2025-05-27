@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, jsonify, redirect, url_for, make_response, current_app
 from flask_login import login_required, current_user
-from .models import List, Task
+from .models import List, Task, Plant
 from . import db
 import json
 from datetime import datetime, timedelta, date
@@ -115,6 +115,10 @@ def delete_list():
 def update_task(task_id):
     task = Task.query.get_or_404(task_id)
     task.if_done = 'if_done' in request.form
+    user = current_user
+    if task.if_done and not task.first_check:
+        task.first_check = True
+        user.water_points += 1
     db.session.commit()
     return redirect(url_for('views.show_list', list_id = task.list_id))
 
@@ -123,6 +127,10 @@ def update_task(task_id):
 def update_task_calendar(task_id):
     task = Task.query.get_or_404(task_id)
     task.if_done = 'if_done' in request.form
+    user = current_user
+    if task.if_done and not task.first_check:
+        task.first_check = True
+        user.water_points += 1
     db.session.commit()
 
     return redirect(url_for('views.calendar'), code=303)
@@ -272,4 +280,37 @@ def check_tasks_and_send_emails():
                     task.reminder_sent = True
 
         db.session.commit()
-        
+
+@views.route('/water_plant', methods=['POST'])
+@login_required
+def water_plant():
+    if current_user.water_points > 0:
+        current_user.water_points -= 1
+        current_user.plant_growth += 1
+        current_user.last_watered = datetime.now()
+        db.session.commit()
+        next_page = request.form.get('next') or url_for('home')
+    return redirect(next_page)
+
+@views.route('/put_plant_on_shelf', methods=['POST'])
+@login_required
+def put_plant_on_shelf():
+    if current_user.plant_growth >= 6*current_user.daily_task_goal:
+        new_plant = Plant(
+            finished_at=datetime.now(),
+            owner=current_user
+        )
+        db.session.add(new_plant)
+
+        current_user.plant_growth = 0
+        current_user.plant_last_watered = None
+        db.session.commit()
+        next_page = request.form.get('next') or url_for('home')
+    return redirect(next_page)
+
+@views.route('/plant-shelf', methods=['GET'])
+@login_required
+def plant_shelf():
+    user = current_user
+    plants = user.plants
+    return render_template("plant_shelf.html", user=current_user, plants=plants)
