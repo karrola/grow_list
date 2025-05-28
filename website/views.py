@@ -289,13 +289,14 @@ def water_plant():
         current_user.plant_growth += 1
         current_user.last_watered = datetime.now()
         db.session.commit()
-        next_page = request.form.get('next') or url_for('home')
+
+    next_page = request.form.get('next') or url_for('home')
     return redirect(next_page)
 
 @views.route('/put_plant_on_shelf', methods=['POST'])
 @login_required
 def put_plant_on_shelf():
-    if current_user.plant_growth >= 6*current_user.daily_task_goal:
+    if current_user.plant_growth >= 3*current_user.daily_task_goal:
         new_plant = Plant(
             finished_at=datetime.now(),
             owner=current_user
@@ -314,3 +315,16 @@ def plant_shelf():
     user = current_user
     plants = user.plants
     return render_template("plant_shelf.html", user=current_user, plants=plants)
+
+@views.route("/update-daily-task-goal", methods=["POST"])
+@login_required
+def update_goal():
+    user = current_user
+    goal = request.form.get("daily-goal", type=int)
+    if goal >= user.daily_task_goal:
+        user.daily_task_goal = goal
+        db.session.commit()
+    else:
+        flash('Nie możesz zmienić dziennego celu na mniejszy, gdy roślinka jest w trakcie wzrostu!', category='error')
+    next_page = request.form.get('next') or url_for('home')
+    return redirect(next_page)

@@ -79,7 +79,7 @@ body {
     text-decoration: none;
 }
 
-.daily-goal{
+.daily-goal {
     width: 100%;
     padding: 0.3rem 0.6rem;
 }
@@ -112,6 +112,41 @@ body {
 .plant-container {
     background-color: #ddd;
     overflow-y: auto;
+}
+
+.progress-bar-container {
+    width: 100%;
+    height: 20px;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.progress-bar-phase {
+    height: 100%;
+    transition: width 0.5s ease;
+}
+
+/* Kolory według faz */
+.phase-1 {
+    background-color: #a8e6a3;
+    /* jasnozielony */
+}
+
+.phase-2 {
+    background-color: #4caf50;
+    /* ciemniejszy zielony */
+}
+
+.phase-3 {
+    background-color: #26a69a;
+    /* niebieskozielony */
+}
+
+.phase-4 {
+    background-color: #fdd835;
+    /* złoty/miodowy */
 }
 
 /* font awesome */

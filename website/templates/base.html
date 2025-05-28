@@ -89,41 +89,67 @@
      
     <div class="plant-container">
       {% if user.is_authenticated %}
+
+      <div id="daily-goal">
+        <span id="goal-text" onclick="toggleGoalForm()">🎯 Cel dzienny: {{ user.daily_task_goal }}</span>
+        <form id="goal-form" method="POST" action="/update-daily-task-goal" style="display: none;">
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <input type="number" name="daily-goal" value="{{ user.daily_task_goal }}" min="1">
+          <button type="submit">Zapisz</button>
+        </form>
+      </div>
       <p>Woda: {{ user.water_points }}</p>
       <p>Wzrost: {{ user.plant_growth }}</p>
 
-      {% if user.plant_growth < 2*user.daily_task_goal %}
+      {% if user.plant_growth < user.daily_task_goal %}
         <img src="{{ url_for('static', filename='images/plant_1.png') }}" class="plant-img" alt="1. faza rozwoju roślinki">
-      {% elif user.plant_growth < 4*user.daily_task_goal %}
+      {% elif user.plant_growth < 2*user.daily_task_goal %}
         <img src="{{ url_for('static', filename='images/plant_2.png') }}" class="plant-img" alt="2. faza rozwoju roślinki">
-      {% elif user.plant_growth < 6*user.daily_task_goal %}
+      {% elif user.plant_growth < 3*user.daily_task_goal %}
         <img src="{{ url_for('static', filename='images/plant_3.png') }}" class="plant-img" alt="3. faza rozwoju roślinki">
       {% else %}
         <img src="{{ url_for('static', filename='images/plant_4.png') }}" class="plant-img" alt="4. faza rozwoju roślinki">
         <form method="POST" action="{{ url_for('views.put_plant_on_shelf') }}">
         <input type="hidden" name="next" value="{{ request.path }}">
         <button type="submit">Odstaw roślinkę na półkę</button>
-        </form>
+        </form>  
       {% endif %}
-      {% if user.plant_growth < 6*user.daily_task_goal %}
-      <form method="POST" action="{{ url_for('views.water_plant') }}">
-      <input type="hidden" name="next" value="{{ request.path }}">
-      <button type="submit">Podlej</button>
-      {% endif %}
-      </form>
 
+      <div class="progress-bar-container">
+        <div class="progress-bar-phase 
+          {% if user.plant_growth < user.daily_task_goal %}
+            phase-1
+          {% elif user.plant_growth < 2 * user.daily_task_goal %}
+            phase-2
+          {% elif user.plant_growth < 3 * user.daily_task_goal %}
+            phase-3
+          {% else %}
+            phase-4
+          {% endif %}
+        " style="width: {{ (user.plant_growth / (3 * user.daily_task_goal) * 100) | round(0, 'floor') }}%">
+        </div>
+      </div>
+      <p>{{ user.plant_growth }} / {{ 3 * user.daily_task_goal }} pkt wzrostu 🌱</p>
+
+      {% if user.plant_growth < 3*user.daily_task_goal %}
+          <form method="POST" action="{{ url_for('views.water_plant') }}">
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <button type="submit">Podlej</button>
+          </form>
+      {% endif %}
+    
       <button type="button" id="show-info" onclick="showInfo(this)">Pokaż jak hodować roślinkę</button>
 
-      <div id="info" style="display: none;">Hodowla Twojej roślinki:
-        1. Każdego dnia musisz dostarczyć jej minimum x punktów wody.
-        2. Twoja roślinka ma 4 stadia wzrostu:
-          - kiełek - dostacz jej x punktów wody, aby osiągnęła kolejne stadium
-          - młode listki - dostarcz jej 2x punktów wody, aby osiągnęła kolejne stadium
-          - całkiem dużo listków - dostarcz jej 2x punktów wody, aby osiągnęła kolejne stadium
-          - piękny okaz - gratulacje, udało ci się wyhodować piękny okaz! Twoja roślinka jest gotowa by dumnie stanąć na parapecie - będzie tam bezpieczna (nie grozi jej już uschnięcie) - możesz zająć się hodowlą kolejnej.
-        3. Gdy przez 2 dni nie dostarczysz roślince odpowiedniej ilości wody, nic się nie stanie.
-        4. Trzeciego dnia bez wody roślinka zacznie usychać, a piątego - będzie już kompletnie uschnięta.
-        5. Roślinki, która uschła, niestety nie da się uratować :c Trafi na parapet razem z innymi, a ty dostaniesz kolejną roślinkę - ale opiekuj się nią dobrze!
+      <div id="info" style="display: none;">
+        Hodowla roślinki:
+        1. Dzień w życiu roślinki trwa od 00.00 do 23.59.
+        2. Każdego dnia musisz dostarczyć jej minimum {{ (user.daily_task_goal * 0.5 + 0.999) | int }} punktów wody.
+        3. Roślinka ma 4 stadia wzrostu. Aby osiągnęła kolejne stadium musisz dostarczyć jej {{user.daily_task_goal}} punktów wody.
+        4. Gdy roślinka osiągnie czwarte stadium wzrostu, jest gotowa by dumnie stanąć na półce - będzie tam bezpieczna (nie grozi jej uschnięcie) - a Ty możesz zająć się hodowlą kolejnej.
+        5. Gdy przez 1 dzień nie dostarczysz roślince odpowiedniej ilości wody, nic się nie stanie.
+        6. Drugiego dnia bez wody roślinka przejdzie w fazę usychania, a czwartego - będzie już kompletnie uschnięta.
+        7. Gdy roślinka jest w fazie usychania, możesz dostarczyć jej {{ (user.daily_task_goal * 0.5 + 0.999) | int }} punktów wody, aby ją uratować.
+        8. Roślinki, która uschła niestety nie da się uratować. Trafi na półkę razem z innymi, a ty dostaniesz kolejną roślinkę - ale opiekuj się nią dobrze!
       </div>
       {% endif %}
     </div>
@@ -177,6 +203,10 @@
       info.style.display = 'none';
       button.textContent = 'Pokaż jak hodować roślinkę';
     }
+  }
+  function toggleGoalForm() {
+    document.getElementById("goal-text").style.display = "none";
+    document.getElementById("goal-form").style.display = "inline";
   }
   </script>
 
