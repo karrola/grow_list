@@ -11,14 +11,10 @@
 
     <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo" alt="logo">
     <h4>Nie masz jeszcze konta?</h4>
-    <a class="nav-item nav-link" id="signUp" href="/sign-up">
-    <button type="button" class="btn btn-outline-secondary">Zarejestruj się</button>
-    </a>
+    <button type="button" class="btn btn-outline-secondary"><a class="link" id="signUp" href="/sign-up">Zarejestruj się</a></button>
     
     <h4>Masz już konto?</h4>
-    <a class="nav-item nav-link" id="login" href="/login">
-    <button type="button" class="btn btn-primary">Zaloguj się</button>
-    </a>
+    <button type="button" class="btn btn-primary"><a class="link" id="login" href="/login">Zaloguj się</a></button>
     
 {% endblock %}
 

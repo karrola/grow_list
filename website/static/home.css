@@ -29,7 +29,11 @@
     flex: 1;
     margin: 0;
     padding-bottom: 1px;
-    color: #212529 !important;
+    color: inherit;
+}
+
+.list-title:hover{
+    color: inherit;
 }
 
 .close {
@@ -40,10 +44,11 @@
 .list-title-input {
     border: none;
     margin-bottom: 0.5rem;
+    background-color: transparent;
 }
 
 .list-title-input:focus {
-    border-color: #6c757d;
+    border-color: #ddd;
     border-radius: 0.175rem;
     box-shadow: 0 0 0 0.1rem rgba(108, 117, 125, 0.25);
     outline: none;

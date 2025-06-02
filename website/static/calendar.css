@@ -5,11 +5,11 @@
   margin: 2rem auto;
 }
 
-/* przyciski FullCalendar ostylowane jak z Bootstrapa (pozmieniane jedynie kolory) */
+/* przyciski FullCalendar ostylowane jak z Bootstrapa (kolory dopasowane do stylu aplikacji) */
 .fc .fc-button {
-  background-color: #0d6efd;
-  color: #fff;
-  border: 1px solid #0d6efd;
+  background-color: #A83A31;         /* ceglasty primary */
+  color: #FDF9F4;                    /* jasny, ciepły tekst */
+  border: 1px solid #A83A31;
   border-radius: 0.375rem;
   padding: 0.375rem 0.75rem;
   font-size: 0.875rem;
@@ -18,25 +18,43 @@
 
 .fc .fc-button:hover,
 .fc .fc-button:focus {
-  background-color: #0b5ed7;
-  border-color: #0a58ca;
+  background-color: #8B2F28;         /* ciemniejszy ceglasty */
+  border-color: #75261F;             /* jeszcze ciemniejszy brzeg */
 }
 
-.fc .fc-button:disabled {
-  background-color: #6c757d;
-  border-color: #6c757d;
+/* Styl dla przycisku "Today" */
+.fc .fc-today-button {
+  background-color: #e6e0a3;     /* delikatna zieleń, pasująca do sekcji z roślinką */
+  color: #3F3F1F;                /* ciemniejszy oliwkowy tekst */
+  border: 1px solid #d4c963;     /* lekko ciemniejszy zielony */
+  transition: background-color 0.2s ease;
+}
+
+/* Hover/Focus dla "Today" */
+.fc .fc-today-button:hover,
+.fc .fc-today-button:focus {
+  background-color: #d4c963;     /* ciemniejszy zielony na hover */
+  border-color: #c3b84f;
+  color: #2F2F1A;
+}
+
+/* Disabled (gdy jesteśmy już na dzisiejszym dniu) */
+.fc .fc-today-button:disabled {
+  background-color: #ccc9a5;
+  border-color: #ccc9a5;
+  color: #666;
   cursor: not-allowed;
   opacity: 0.65;
 }
 
 /* podświetlenie dnia dzisiejszego w kalendarzu */
 .fc .fc-day-today {
-  background-color: #e6f0ff !important;
-  border: 1px solid #0d6efd;
+  background-color: #e6e0a3 !important;   /* jasny żółtawy highlight */
+  border: 1px solid #A83A31;              /* pasująca cegła */
 }
 
 .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
-  color: #0d6efd;
+  color: #A83A31;                         /* podkreślony dzień w ceglastym */
   font-weight: bold;
 }
 
@@ -67,7 +85,7 @@
 
 .task {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: start;
   align-content: baseline;
   padding: 0.5rem 0;
@@ -79,6 +97,15 @@
 .form-check {
   flex-shrink: 0;
   margin-right: 6px;
+}
+
+.task-header{
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-content: baseline;
+  padding: 0.5rem 0;
+  width: 100%;
 }
 
 .task-data {
@@ -103,12 +130,18 @@
     margin-right: 0;
 }
 
+.edit{
+  background-color: transparent;
+  border: none;
+  font-size: 0.8rem;
+}
 .close {
+  margin-left: 1rem;
   flex-shrink: 0;
 }
 
 /*formularz dodawania zadania*/
-.add-task-form {
+.add-task-form, .edit-task-form {
   border: 1px solid #ddd;
   border-radius: 0.375rem;
   margin-top: 0.7rem;
@@ -118,13 +151,14 @@
 .task-data-input {
   border: none;
   margin-bottom: 0.5rem;
+  background-color: transparent;
 }
 
 .task-data-input:focus {
   outline: none;
 }
 
-.add-task-form .fa-solid {
+.add-task-form .fa-solid, .edit-task-form .fa-solid {
   margin-left: 0.3rem;
   margin-right: 0.3rem;
 }

@@ -6,6 +6,7 @@ from flask_migrate import Migrate
 import os
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
+import logging
 
 load_dotenv()
 
@@ -27,6 +28,7 @@ def create_app():
     app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS') == 'True'
     app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
     app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
+    app.config['TESTING'] = False
     
     # inicjalizacja rozszerzeń
     db.init_app(app)
@@ -36,8 +38,17 @@ def create_app():
     # blueprints
     from .views import views
     from .auth import auth
+    from .test import test #testowe ścieżki do usychania rośliny
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
+    app.register_blueprint(test, url_prefix='/') #testowe ścieżki do usychania rośliny
+
+    @app.after_request
+    def add_no_cache_headers(response):
+        response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0"
+        response.headers["Pragma"] = "no-cache"
+        response.headers["Expires"] = "-1"
+        return response
 
     # modele
     from .models import User, List

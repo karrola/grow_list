@@ -18,9 +18,13 @@ class User(db.Model, UserMixin):
     lists = db.relationship('List', backref='user', cascade='all, delete-orphan', lazy=True)
     water_points = db.Column(db.Integer, default=0)
     plant_growth = db.Column(db.Integer, default=0)
-    plant_last_watered = db.Column(db.DateTime)
     plants = db.relationship('Plant', backref='owner', lazy=True)
     daily_task_goal = db.Column(db.Integer, default=1)
+    daily_checked_tasks = db.Column(db.Integer, default=0)
+    plant_wither_stage = db.Column(db.Integer, default=0)
+    plant_rescue_progress = db.Column(db.Integer, default=0)
+    plant_unwatered_days = db.Column(db.Integer, default=0)
+    plant_withered_notification_sent = db.Column(db.Boolean, default=False)
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -34,6 +38,7 @@ class Task(db.Model):
     reminder = db.Column(db.Boolean, default=False)
     reminder_sent = db.Column(db.Boolean, default=False)
     first_check = db.Column(db.Boolean, default=False)
+    completed_at = db.Column(db.DateTime, nullable=True)
 
 class Plant(db.Model):
     id = db.Column(db.Integer, primary_key=True)

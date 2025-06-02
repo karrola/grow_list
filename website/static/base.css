@@ -5,6 +5,15 @@
 
 body {
     font-family: montserrat !important;
+    color: 		#2E2E2E
+}
+
+.text-muted {
+  color: #8B6D5C !important;
+}
+
+input[type="checkbox"] {
+  accent-color: #8B4B39;  /* ceglasty kolor */
 }
 
 .wrapper {
@@ -21,7 +30,8 @@ body {
     padding: 0 1rem;
     height: 100vh;
     overflow-y: auto;
-    color: #e2e2e2;
+    color: 	#F0E6D2;
+    background-color: #8B4B39 !important;
 }
 
 .user {
@@ -31,7 +41,7 @@ body {
     width: 12rem;
     padding-top: 0.6rem;
     padding-bottom: 1.5rem;
-    background-color: #343a40;
+    background-color: #8B4B39;
 }
 
 .user-name {
@@ -62,7 +72,7 @@ body {
 }
 
 .nav-button:hover {
-    background-color: rgb(33, 33, 33);
+    background-color: #6A3729;
     transition: 0.2s;
 }
 
@@ -71,11 +81,11 @@ body {
     width: 100%;
     height: 100%;
     text-overflow: ellipsis;
-    color: #e2e2e2;
+    color: #F0E6D2;
 }
 
 .link:hover {
-    color: #e2e2e2;
+    color: #F0E6D2;
     text-decoration: none;
 }
 
@@ -99,54 +109,107 @@ body {
     width: 12rem;
     padding-top: 1.5rem;
     padding-bottom: 0.5rem;
-    background-color: #343a40;
+    background-color: #8B4B39;
 }
 
 /* główny kontent */
 .main-content {
     min-width: 570px;
     overflow-y: auto;
+    background-color: #fdf6f0;
 }
 
 /* box z rośliną */
 .plant-container {
-    background-color: #ddd;
+    background-color:#f0ec9b;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    justify-items: start;
+    min-height: 100vh;
+}
+
+.header{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-top: 0.5rem;
+}
+
+.daily-goal-input{
+    width: 3rem;
+}
+.plant-img-container{
+    height: 23rem;
+    width: 17rem;
+    display: flex;
+    justify-content: center;
+    align-items: end;
+border-radius: 20px;
+  background: linear-gradient(
+    to bottom,
+    #f4e1d2 70%,       /* szyba – ciepły beż */     /* koniec szyby */
+    #ccac8c 70%
+  );
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+      flex-shrink: 0;
+
+}
+
+.plant-img{
+    max-height: 20rem;
+    margin-bottom: 1.5rem;
+}
+
+.plant-img--1{
+    width: 8rem;
+}
+.plant-img--2{
+    width: 11.1rem;
+}
+.plant-img--3{
+    width: 12.9rem;
+    padding-right: 3px;
+}
+.plant-img--4{
+    width: 14.5rem;
+    padding-right: 3px;
 }
 
 .progress-bar-container {
-    width: 100%;
+    width: 17rem;
     height: 20px;
-    background-color: #e0e0e0;
+    background-color: 	#fdf6f0;
     border-radius: 10px;
     overflow: hidden;
-    margin-top: 10px;
 }
 
 .progress-bar-phase {
     height: 100%;
     transition: width 0.5s ease;
+    background-color: #C69E02;
 }
 
-/* Kolory według faz */
-.phase-1 {
-    background-color: #a8e6a3;
-    /* jasnozielony */
+.progress-info{
+    font-size: 0.8rem;
+    margin-top: 0.1rem;
+    margin-bottom: 0;
 }
 
-.phase-2 {
-    background-color: #4caf50;
-    /* ciemniejszy zielony */
+.show-info{
+    margin-top: auto;
+    margin-bottom: 1rem;
 }
 
-.phase-3 {
-    background-color: #26a69a;
-    /* niebieskozielony */
-}
-
-.phase-4 {
-    background-color: #fdd835;
-    /* złoty/miodowy */
+.info{
+    width: 17rem;
+    font-size: 0.8rem;
+    text-align: justify;
+    margin-bottom: 1rem;
 }
 
 /* font awesome */
@@ -163,4 +226,130 @@ body {
 .fa-arrow-right-from-bracket,
 .fa-inbox {
     margin-right: 0.6rem;
+}
+
+.fa-bullseye, .fa-droplet{
+    margin-right: 0.5rem;
+}
+
+.btn-primary {
+  background-color: #A83A31;
+  border-color: #A83A31;
+  color: #F0E6D2;
+}
+
+.btn-primary:hover {
+  background-color: #922f28;  /* ciemniejszy odcień na hover */
+  border-color: #922f28;
+  color: #F0E6D2;
+}
+
+.btn-primary:focus,
+.btn-primary:active {
+  background-color: #7e2721;  /* jeszcze ciemniejszy na active/focus */
+  border-color: #7e2721;
+  color: #F0E6D2;
+  box-shadow: 0 0 0 0.25rem rgba(168, 58, 49, 0.5);  /* subtelny cień */
+}
+
+.btn-outline-secondary {
+  background-color: transparent;
+  color: #3F3F1F;                  /* oliwkowy/brązowy tekst */
+  border: 1px solid #d4c963;       /* jasna, naturalna zieleń */
+}
+
+.btn-outline-secondary:hover,
+.btn-outline-secondary:focus {
+  background-color: #e6e0a3;       /* tło w stylu roślinnym */
+  color: #2E2E1A;                  /* ciemniejszy tekst na hover */
+  border-color: #c3b84f;
+}
+
+.btn-outline-secondary:active {
+  background-color: #d4c963;
+  border-color: #b8ad44;
+  color: #2E2E1A;
+}
+
+.btn-outline-secondary:disabled {
+  color: #88886b;
+  border-color: #d4c963;
+  background-color: transparent;
+  opacity: 0.65;
+}
+
+.btn-secondary {
+  background-color: #e6e0a3;   /* jasna, roślinna zieleń */
+  border-color: #e6e0a3;
+  color: #3F3F1F;              /* oliwkowobrązowy, czytelny tekst */
+}
+
+.btn-secondary:hover,
+.btn-secondary:focus {
+  background-color: #d4c963;   /* trochę ciemniejsza na hover */
+  border-color: #c3b84f;
+  color: #2E2E1A;
+}
+
+.btn-secondary:active {
+  background-color: #c3b84f;
+  border-color: #b8ad44;
+}
+
+.btn-secondary:disabled {
+  background-color: #e6e0a3;
+  border-color: #e6e0a3;
+  color: #88886b;
+  opacity: 0.65;
+}
+
+.btn-outline-primary {
+  background-color: transparent;
+  color: #8B4B39;                  /* ceglasty tekst */
+  border: 1px solid #a85c48;       /* jaśniejszy ceglasty kontur */
+}
+
+.btn-outline-primary:hover,
+.btn-outline-primary:focus {
+  background-color: #a85c48;       /* cieplejszy ceglasty hover */
+  color: #F0E6D2;
+  border-color: #8B4B39;
+}
+
+.btn-outline-primary:active {
+  background-color: #8B4B39;
+  border-color: #723a2c;
+  color: #F0E6D2;
+}
+
+.btn-outline-primary:disabled {
+  color: #b88c82;
+  border-color: #d2aaa1;
+  background-color: transparent;
+  opacity: 0.65;
+}
+
+button,
+.button,
+.btn {
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Reset domyślnego podświetlenia Firefox */
+button::-moz-focus-inner {
+  border: 0;
+}
+
+.alert-danger{
+  background-color: #f3d3ce !important;
+  color: #702e24 !important;
+  border-color: none !important;
+}
+
+.alert-success{
+  background-color: #f0ec9b !important;
+  color: #2E2E1A !important;
+  border-color: none !important;
 }

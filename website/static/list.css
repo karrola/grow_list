@@ -17,7 +17,7 @@
 
 .task {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     justify-content: start;
     align-content: baseline;
     padding: 0.5rem 0;
@@ -30,6 +30,15 @@
     flex-shrink: 0;
     margin-right: 6px;
     padding: 0;
+}
+
+.task-header{
+  display: flex;
+  flex-direction: row;
+  justify-content: start;
+  align-content: baseline;
+  padding: 0.5rem 0;
+  width: 100%;
 }
 
 .task-data {
@@ -54,12 +63,19 @@
     margin-right: 0;
 }
 
+.edit{
+  background-color: transparent;
+  border: none;
+  font-size: 0.8rem;
+}
+
 .close {
-    flex-shrink: 0;
+  margin-left: 1rem;
+  flex-shrink: 0;
 }
 
 /* formularz dodawania zadania */
-.add-task-form {
+.add-task-form, .edit-task-form {
     border: 1px solid #ddd;
     border-radius: 0.375rem;
     margin-top: 0.7rem;
@@ -69,13 +85,14 @@
 .task-data-input {
     border: none;
     margin-bottom: 0.5rem;
+    background-color: transparent;
 }
 
 .task-data-input:focus {
     outline: none;
 }
 
-.add-task-form .fa-solid {
+.add-task-form .fa-solid, .edit-task-form .fa-solid {
     margin-left: 0.3rem;
     margin-right: 0.3rem;
 }

@@ -3,6 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
     <link
       rel="stylesheet"
       href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
@@ -57,7 +60,6 @@
           <p class="user-name"><i class="fa-regular fa-circle-user"></i>{{user.first_name}}</p>
         </div>
         <div class="nav">
-          <div class="daily-goal"><i class="fa-solid fa-bullseye"></i>Dzienny cel: {{user.daily_task_goal}}</div>
           <div class=" nav-main">
             <button class="nav-button"><a class="link" id="home" href="/calendar"><i class="fa-solid fa-calendar"></i>Kalendarz</a></button>
             {% for list in user.lists if list.is_default %}
@@ -90,66 +92,92 @@
     <div class="plant-container">
       {% if user.is_authenticated %}
 
+      <!-- dzienny cel + woda -->
+      <div class="header">
       <div id="daily-goal">
-        <span id="goal-text" onclick="toggleGoalForm()">🎯 Cel dzienny: {{ user.daily_task_goal }}</span>
+        <span id="goal-text" onclick="toggleGoalForm()" data-bs-toggle="tooltip" title="Kliknij aby zmienić"><i class="fa-solid fa-bullseye"></i>Dzienny cel: {{user.daily_checked_tasks}} / {{user.daily_task_goal}}</span>
         <form id="goal-form" method="POST" action="/update-daily-task-goal" style="display: none;">
           <input type="hidden" name="next" value="{{ request.path }}">
-          <input type="number" name="daily-goal" value="{{ user.daily_task_goal }}" min="1">
-          <button type="submit">Zapisz</button>
+          <input type="number" name="daily-goal" value="{{ user.daily_task_goal }}" min="1" class="daily-goal-input">
+          <button type="submit" class="btn btn-outline-secondary btn-sm">Zapisz</button>
         </form>
       </div>
-      <p>Woda: {{ user.water_points }}</p>
-      <p>Wzrost: {{ user.plant_growth }}</p>
-
-      {% if user.plant_growth < user.daily_task_goal %}
-        <img src="{{ url_for('static', filename='images/plant_1.png') }}" class="plant-img" alt="1. faza rozwoju roślinki">
-      {% elif user.plant_growth < 2*user.daily_task_goal %}
-        <img src="{{ url_for('static', filename='images/plant_2.png') }}" class="plant-img" alt="2. faza rozwoju roślinki">
-      {% elif user.plant_growth < 3*user.daily_task_goal %}
-        <img src="{{ url_for('static', filename='images/plant_3.png') }}" class="plant-img" alt="3. faza rozwoju roślinki">
-      {% else %}
-        <img src="{{ url_for('static', filename='images/plant_4.png') }}" class="plant-img" alt="4. faza rozwoju roślinki">
-        <form method="POST" action="{{ url_for('views.put_plant_on_shelf') }}">
-        <input type="hidden" name="next" value="{{ request.path }}">
-        <button type="submit">Odstaw roślinkę na półkę</button>
-        </form>  
-      {% endif %}
-
-      <div class="progress-bar-container">
-        <div class="progress-bar-phase 
-          {% if user.plant_growth < user.daily_task_goal %}
-            phase-1
-          {% elif user.plant_growth < 2 * user.daily_task_goal %}
-            phase-2
-          {% elif user.plant_growth < 3 * user.daily_task_goal %}
-            phase-3
-          {% else %}
-            phase-4
-          {% endif %}
-        " style="width: {{ (user.plant_growth / (3 * user.daily_task_goal) * 100) | round(0, 'floor') }}%">
-        </div>
+      <div><i class="fa-solid fa-droplet" style="color: #98c7ce;"></i>Woda: {{ user.water_points }}</div>
       </div>
-      <p>{{ user.plant_growth }} / {{ 3 * user.daily_task_goal }} pkt wzrostu 🌱</p>
 
-      {% if user.plant_growth < 3*user.daily_task_goal %}
-          <form method="POST" action="{{ url_for('views.water_plant') }}">
-          <input type="hidden" name="next" value="{{ request.path }}">
-          <button type="submit">Podlej</button>
-          </form>
+      <!-- roślinka -->
+      {% if user.plant_wither_stage == 3 %}
+        {% if user.plant_growth < user.daily_task_goal %}
+          <div class="plant-img-container"><img src="{{ url_for('static', filename='images/plant_1_dead.png') }}" class="plant-img plant-img--1" alt="Uschnięta roślinka"></div>
+        {% elif user.plant_growth < 2 * user.daily_task_goal %}
+          <div class="plant-img-container"><img src="{{ url_for('static', filename='images/plant_2_dead.png') }}" class="plant-img plant-img--2" alt="Uschnięta roślinka"></div>
+        {% else  %}
+          <div class="plant-img-container"><img src="{{ url_for('static', filename='images/plant_3_dead.png') }}" class="plant-img plant-img--3" alt="Uschnięta roślinka"></div>
+        {% endif %}
+      {% elif user.plant_wither_stage == 2 or user.plant_wither_stage == 1%}
+        {% if user.plant_growth < user.daily_task_goal %}
+          <div class="plant-img-container"><img src="{{ url_for('static', filename='images/plant_1_wither.png') }}" class="plant-img plant-img--1" alt="Faza usychania"></div>
+        {% elif user.plant_growth < 2 * user.daily_task_goal %}
+          <div class="plant-img-container"><img src="{{ url_for('static', filename='images/plant_2_wither.png') }}" class="plant-img plant-img--2" alt="Faza usychania"></div>
+        {% else  %}
+          <div class="plant-img-container"><img src="{{ url_for('static', filename='images/plant_3_wither.png') }}" class="plant-img plant-img--3" alt="faza usychania"></div>
+        {% endif %}
+      {% else %}
+        {% if user.plant_growth < user.daily_task_goal %}
+          <div class="plant-img-container"><img src="{{ url_for('static', filename='images/plant_1.png') }}" class="plant-img plant-img--1" alt="1. faza rozwoju"></div>
+        {% elif user.plant_growth < 2 * user.daily_task_goal %}
+          <div class="plant-img-container"><img src="{{ url_for('static', filename='images/plant_2.png') }}" class="plant-img plant-img--2" alt="2. faza rozwoju"></div>
+        {% elif user.plant_growth < 3 * user.daily_task_goal %}
+          <div class="plant-img-container"><img src="{{ url_for('static', filename='images/plant_3.png') }}" class="plant-img plant-img--3" alt="3. faza rozwoju"></div>
+        {% else %}
+          <div class="plant-img-container"><img src="{{ url_for('static', filename='images/plant_4.png') }}" class="plant-img plant-img--4" alt="4. faza rozwoju"></div>
+        {% endif %}
       {% endif %}
-    
-      <button type="button" id="show-info" onclick="showInfo(this)">Pokaż jak hodować roślinkę</button>
+      
+      <!-- pasek postępu wzrostu -->
+      <div class="plant-progress-bar">
+        <div class="progress-bar-container">
+          <div class="progress-bar-phase" style="width: {{ (user.plant_growth / (3 * user.daily_task_goal) * 100) | round(0, 'floor') }}%"></div>
+        </div>
+        <p class="progress-info text-muted">{{ user.plant_growth }} / {{ 3 * user.daily_task_goal }} punktów wzrostu </p>
+      </div>
 
-      <div id="info" style="display: none;">
-        Hodowla roślinki:
-        1. Dzień w życiu roślinki trwa od 00.00 do 23.59.
-        2. Każdego dnia musisz dostarczyć jej minimum {{ (user.daily_task_goal * 0.5 + 0.999) | int }} punktów wody.
-        3. Roślinka ma 4 stadia wzrostu. Aby osiągnęła kolejne stadium musisz dostarczyć jej {{user.daily_task_goal}} punktów wody.
-        4. Gdy roślinka osiągnie czwarte stadium wzrostu, jest gotowa by dumnie stanąć na półce - będzie tam bezpieczna (nie grozi jej uschnięcie) - a Ty możesz zająć się hodowlą kolejnej.
-        5. Gdy przez 1 dzień nie dostarczysz roślince odpowiedniej ilości wody, nic się nie stanie.
-        6. Drugiego dnia bez wody roślinka przejdzie w fazę usychania, a czwartego - będzie już kompletnie uschnięta.
-        7. Gdy roślinka jest w fazie usychania, możesz dostarczyć jej {{ (user.daily_task_goal * 0.5 + 0.999) | int }} punktów wody, aby ją uratować.
-        8. Roślinki, która uschła niestety nie da się uratować. Trafi na półkę razem z innymi, a ty dostaniesz kolejną roślinkę - ale opiekuj się nią dobrze!
+      <!-- pasek postępu ratowania -->
+      {% if user.plant_wither_stage in [1, 2] %}
+      <div class="plant-rescue-bar">
+        <div class="progress-bar-container">
+          <div class="progress-bar-phase" style="width: {{ (user.plant_rescue_progress / ((user.daily_task_goal * 0.5 + 0.999) | int) * 100) | round(0, 'floor') }}%"></div>
+        </div>
+        <p class="progress-info text-muted">{{ user.plant_rescue_progress }} / {{ (user.daily_task_goal * 0.5 + 0.999) | int }}</p>
+      </div>
+      {% endif %}
+      
+      <!-- podlewanie -->
+      {% if (user.plant_growth < 3*user.daily_task_goal) and (user.plant_wither_stage < 3) %}
+      <form method="POST" action="{{ url_for('views.water_plant') }}">
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <button type="submit" class="btn btn-primary btn-sm">Podlej</button>
+      </form>
+      {% else %}
+      <form method="POST" action="{{ url_for('views.put_plant_on_shelf') }}">
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <button type="submit" class="btn btn-primary btn-sm">Odstaw roślinkę na półkę</button>
+      </form>
+      {% endif %}
+
+      <!-- poradnik dla użytkownika -->
+      <button type="button" id="show-info" onclick="showInfo(this)" class="btn btn-outline-primary btn-sm show-info">Pokaż jak hodować roślinkę</button>
+
+      <div id="info" class="info" style="display: none;">
+        Hodowla roślinki: <br>
+        1. Dzień w życiu roślinki trwa od 00.00 do 23.59. <br>
+        2. Każdego dnia musisz dostarczyć jej minimum {{ (user.daily_task_goal * 0.5 + 0.999) | int }} punktów wody. <br>
+        3. Roślinka ma 4 stadia wzrostu. Aby osiągnęła kolejne stadium musisz dostarczyć jej {{user.daily_task_goal}} punktów wody. <br>
+        4. Gdy roślinka osiągnie czwarte stadium wzrostu, jest gotowa by dumnie stanąć na półce - będzie tam bezpieczna (nie grozi jej uschnięcie) - a Ty możesz zająć się hodowlą kolejnej. <br>
+        5. Gdy przez 1 dzień nie dostarczysz roślince odpowiedniej ilości wody, nic się nie stanie. <br>
+        6. Po dwóch dniach bez wody roślinka przejdzie w fazę usychania, a po czterech - będzie już kompletnie uschnięta. <br>
+        7. Gdy roślinka jest w fazie usychania, musisz dostarczyć jej {{ (user.daily_task_goal * 0.5 + 0.999) | int }} punktów wody, aby ją uratować. <br>
+        8. Roślinki, która uschła niestety nie da się uratować. Trafi na półkę razem z innymi, a ty dostaniesz kolejną roślinkę - ale opiekuj się nią dobrze! <br>
       </div>
       {% endif %}
     </div>
@@ -172,8 +200,12 @@
     integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
     crossorigin="anonymous"
   ></script>
-  <!-- usuwanie zadań -->
   <script>
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+  </script>
+  <script>
+    // usuwanie zadań
     function deleteTask(taskId) {
       fetch("/delete-task", {
         method: "POST",
@@ -192,6 +224,7 @@
         });
       }, 2000);
     });
+  // pokaz/ukryj poradnik
   function showInfo() {
     const button = document.getElementById('show-info');
     const info = document.getElementById('info');
@@ -204,6 +237,7 @@
       button.textContent = 'Pokaż jak hodować roślinkę';
     }
   }
+  // zmiana dziennego celu
   function toggleGoalForm() {
     document.getElementById("goal-text").style.display = "none";
     document.getElementById("goal-form").style.display = "inline";
