@@ -26,109 +26,110 @@
           {% if tasks_by_date[iso] %}
             {% for task in tasks_by_date[iso] if not task.if_done %}
               <li class="task">
-                <div class="task-header">
-                <form method="POST" action="{{ url_for('views.update_task_calendar', task_id=task.id) }}" class="form-check">
-                  <input type="checkbox" name="if_done" value="true" class="form-check-input" {% if task.if_done %}checked{% endif %} onchange="this.form.submit()">
-                </form>
-                <p class="task-data">{{ task.data }}</p>
-                <span class="task-info text-muted">
-                <i class="fa-solid fa-hashtag"></i> {{ task.list.list_title }}
-                <i class="fa-solid fa-clock"></i> {{ task.deadline_time.strftime('%H:%M') if task.deadline_time else '-' }}
-                {% if task.reminder %} <i class="fa-solid fa-bell"></i> {% endif %}
-
-                </span>
-                                                <button type="button" class="edit text-muted" data-date="{{ iso }}" onClick="editTaskForm(this)">
-                <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-                <button type="button" class="close text-muted" onClick="deleteTask({{ task.id }})">
-                <span aria-hidden="true">&times;</span>
-                
-                </button>
+                <!-- info o zadaniu -->
+                <div class="task-header"> 
+                  <form method="POST" action="{{ url_for('views.update_task_calendar', task_id=task.id) }}" class="form-check">
+                    <input type="checkbox" name="if_done" value="true" class="form-check-input" {% if task.if_done %}checked{% endif %} onchange="this.form.submit()">
+                  </form>
+                  <p class="task-data">{{ task.data }}</p>
+                  <span class="task-info text-muted">
+                    <i class="fa-solid fa-hashtag"></i> {{ task.list.list_title }}
+                    <i class="fa-solid fa-clock"></i> {{ task.deadline_time.strftime('%H:%M') if task.deadline_time else '-' }}
+                    {% if task.reminder %} <i class="fa-solid fa-bell"></i> {% endif %}
+                  </span>
+                  <button type="button" class="edit text-muted" data-date="{{ iso }}" onClick="editTaskForm(this)">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button type="button" class="close text-muted" onClick="deleteTask({{ task.id }})">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
                 </div>
-                              <div class="edit-task-form" style="display: none;">
-                    <form method="POST">
-                      <input type="hidden" name="action" value="edit_task">
-                      <input type="hidden" name="task_id" value="{{ task.id }}">
-                      <input type="text" name="task" id="task" class="task-data-input" autocomplete="off" placeholder="Wpisz treść zadania..."><br />
-                      <label for="list" class="text-muted"><i class="fa-solid fa-hashtag"></i></label>
-                      <select name="list" id="list">
-                      {% for list in user.lists %}
-                        {% if list.is_default == True %}
-                          <option value="{{ list.id }}" selected>{{ list.list_title }}</option>
-                        {% else %}
-                          <option value="{{ list.id }}">{{ list.list_title }}</option>
-                        {% endif %}
-                      {% endfor %}
-                      </select>
-                      <span class="text-muted">
-                        <i class="fa-solid fa-calendar-days"></i>
-                        <input type="date" name="deadline_date" id="deadline_date" class="deadline-date">
-                      </span>
-                      <span class="text-muted">
-                        <i class="fa-solid fa-clock"></i>
-                        <input type="time" name="deadline_time" id="deadline_time" class="deadline-time">
-                      </span>
-                      <label for="reminder" class="text-muted"><i class="fa-solid fa-bell"></i></label>
-                      <input type="checkbox" name="reminder" id="reminder">
-                      <div class="submit-add-task-form-buttons">
-                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cancelEditTaskForm(this)">Anuluj</button>
-                        <button type="submit" class="btn btn-primary btn-sm">Edytuj zadanie</button>
-                      </div>
-                    </form>
+                <!-- formularz edytowania zadania -->
+                <div class="edit-task-form" style="display: none;">
+                  <form method="POST">
+                    <input type="hidden" name="action" value="edit_task">
+                    <input type="hidden" name="task_id" value="{{ task.id }}">
+                    <input type="text" name="task" id="task" class="task-data-input" autocomplete="off" placeholder="Wpisz treść zadania..."><br />
+                    <label for="list" class="text-muted"><i class="fa-solid fa-hashtag"></i></label>
+                    <select name="list" id="list">
+                    {% for list in user.lists %}
+                      {% if list.is_default == True %}
+                        <option value="{{ list.id }}" selected>{{ list.list_title }}</option>
+                      {% else %}
+                        <option value="{{ list.id }}">{{ list.list_title }}</option>
+                      {% endif %}
+                    {% endfor %}
+                    </select>
+                    <span class="text-muted">
+                      <i class="fa-solid fa-calendar-days"></i>
+                      <input type="date" name="deadline_date" id="deadline_date" class="deadline-date">
+                    </span>
+                    <span class="text-muted">
+                      <i class="fa-solid fa-clock"></i>
+                      <input type="time" name="deadline_time" id="deadline_time" class="deadline-time">
+                    </span>
+                    <label for="reminder" class="text-muted"><i class="fa-solid fa-bell"></i></label>
+                    <input type="checkbox" name="reminder" id="reminder">
+                    <div class="submit-add-task-form-buttons">
+                      <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cancelEditTaskForm(this)">Anuluj</button>
+                      <button type="submit" class="btn btn-primary btn-sm">Edytuj zadanie</button>
+                    </div>
+                  </form>
                 </div>
               </li>
             {% endfor %}
             <div class="done-tasks" style="display: none;">
             {% for task in tasks_by_date[iso] if task.if_done %}
               <li class="task">
+                <!-- info o zadaniu -->
                 <div class="task-header">
-                <form method="POST" action="{{ url_for('views.update_task_calendar', task_id=task.id) }}" class="form-check">
-                  <input type="checkbox" name="if_done" value="true" class="form-check-input" {% if task.if_done %}checked{% endif %} onchange="this.form.submit()">
-                </form>
-                <p class="task-data">{{ task.data }}</p>
-                <span class="task-info text-muted">
-                <i class="fa-solid fa-hashtag"></i> {{ task.list.list_title }}
-                <i class="fa-solid fa-clock"></i> {{ task.deadline_time.strftime('%H:%M') if task.deadline_time else '-' }}
-                {% if task.reminder %} <i class="fa-solid fa-bell"></i> {% endif %}
-
-                </span>
-                                                <button type="button" class="edit text-muted" data-date="{{ iso }}" onClick="editTaskForm(this)">
-                <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-                <button type="button" class="close text-muted" onClick="deleteTask({{ task.id }})">
-                <span aria-hidden="true">&times;</span>
-                </button>
+                  <form method="POST" action="{{ url_for('views.update_task_calendar', task_id=task.id) }}" class="form-check">
+                    <input type="checkbox" name="if_done" value="true" class="form-check-input" {% if task.if_done %}checked{% endif %} onchange="this.form.submit()">
+                  </form>
+                  <p class="task-data">{{ task.data }}</p>
+                  <span class="task-info text-muted">
+                    <i class="fa-solid fa-hashtag"></i> {{ task.list.list_title }}
+                    <i class="fa-solid fa-clock"></i> {{ task.deadline_time.strftime('%H:%M') if task.deadline_time else '-' }}
+                    {% if task.reminder %} <i class="fa-solid fa-bell"></i> {% endif %}
+                  </span>
+                  <button type="button" class="edit text-muted" data-date="{{ iso }}" onClick="editTaskForm(this)">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button type="button" class="close text-muted" onClick="deleteTask({{ task.id }})">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
                 </div>
-                              <div class="edit-task-form" style="display: none;">
-                    <form method="POST">
-                      <input type="hidden" name="action" value="edit_task">
-                      <input type="hidden" name="task_id" value="{{ task.id }}">
-                      <input type="text" name="task" id="task" class="task-data-input" autocomplete="off" placeholder="Wpisz treść zadania..."><br />
-                      <label for="list" class="text-muted"><i class="fa-solid fa-hashtag"></i></label>
-                      <select name="list" id="list">
-                      {% for list in user.lists %}
-                        {% if list.is_default == True %}
-                          <option value="{{ list.id }}" selected>{{ list.list_title }}</option>
-                        {% else %}
-                          <option value="{{ list.id }}">{{ list.list_title }}</option>
-                        {% endif %}
-                      {% endfor %}
-                      </select>
-                      <span class="text-muted">
-                        <i class="fa-solid fa-calendar-days"></i>
-                        <input type="date" name="deadline_date" id="deadline_date" class="deadline-date">
-                      </span>
-                      <span class="text-muted">
-                        <i class="fa-solid fa-clock"></i>
-                        <input type="time" name="deadline_time" id="deadline_time" class="deadline-time">
-                      </span>
-                      <label for="reminder" class="text-muted"><i class="fa-solid fa-bell"></i></label>
-                      <input type="checkbox" name="reminder" id="reminder">
-                      <div class="submit-add-task-form-buttons">
-                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cancelEditTaskForm(this)">Anuluj</button>
-                        <button type="submit" class="btn btn-primary btn-sm">Edytuj zadanie</button>
-                      </div>
-                    </form>
+                <!-- formularz edytowania zadania -->
+                <div class="edit-task-form" style="display: none;">
+                  <form method="POST">
+                    <input type="hidden" name="action" value="edit_task">
+                    <input type="hidden" name="task_id" value="{{ task.id }}">
+                    <input type="text" name="task" id="task" class="task-data-input" autocomplete="off" placeholder="Wpisz treść zadania..."><br />
+                    <label for="list" class="text-muted"><i class="fa-solid fa-hashtag"></i></label>
+                    <select name="list" id="list">
+                    {% for list in user.lists %}
+                      {% if list.is_default == True %}
+                        <option value="{{ list.id }}" selected>{{ list.list_title }}</option>
+                      {% else %}
+                        <option value="{{ list.id }}">{{ list.list_title }}</option>
+                      {% endif %}
+                    {% endfor %}
+                    </select>
+                    <span class="text-muted">
+                      <i class="fa-solid fa-calendar-days"></i>
+                      <input type="date" name="deadline_date" id="deadline_date" class="deadline-date">
+                    </span>
+                    <span class="text-muted">
+                      <i class="fa-solid fa-clock"></i>
+                      <input type="time" name="deadline_time" id="deadline_time" class="deadline-time">
+                    </span>
+                    <label for="reminder" class="text-muted"><i class="fa-solid fa-bell"></i></label>
+                    <input type="checkbox" name="reminder" id="reminder">
+                    <div class="submit-add-task-form-buttons">
+                      <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cancelEditTaskForm(this)">Anuluj</button>
+                      <button type="submit" class="btn btn-primary btn-sm">Edytuj zadanie</button>
+                    </div>
+                  </form>
                 </div>
               </li>
             {% endfor %}
@@ -151,106 +152,110 @@
           {% if tasks_by_date[iso] %}
             {% for task in tasks_by_date[iso] if not task.if_done %}
               <li class="task">
+                <!-- info o zadaniu -->
                 <div class="task-header">
-                <form method="POST" action="{{ url_for('views.update_task_calendar', task_id=task.id) }}" class="form-check">
-                  <input type="checkbox" name="if_done" value="true" class="form-check-input" {% if task.if_done %}checked{% endif %} onchange="this.form.submit()">
-                </form>
-                <p class="task-data">{{ task.data }}</p>
-                <span class="task-info text-muted">
-                <i class="fa-solid fa-hashtag"></i> {{ task.list.list_title }}
-                <i class="fa-solid fa-clock"></i> {{ task.deadline_time.strftime('%H:%M') if task.deadline_time else '-' }}
-                {% if task.reminder %} <i class="fa-solid fa-bell"></i> {% endif %}
-                </span>
-                <button type="button" class="edit text-muted" data-date="{{ iso }}" onClick="editTaskForm(this)">
-                <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-                <button type="button" class="close text-muted" onClick="deleteTask({{ task.id }})">
-                <span aria-hidden="true">&times;</span>
-                </button>
+                  <form method="POST" action="{{ url_for('views.update_task_calendar', task_id=task.id) }}" class="form-check">
+                    <input type="checkbox" name="if_done" value="true" class="form-check-input" {% if task.if_done %}checked{% endif %} onchange="this.form.submit()">
+                  </form>
+                  <p class="task-data">{{ task.data }}</p>
+                  <span class="task-info text-muted">
+                    <i class="fa-solid fa-hashtag"></i> {{ task.list.list_title }}
+                    <i class="fa-solid fa-clock"></i> {{ task.deadline_time.strftime('%H:%M') if task.deadline_time else '-' }}
+                    {% if task.reminder %} <i class="fa-solid fa-bell"></i> {% endif %}
+                  </span>
+                  <button type="button" class="edit text-muted" data-date="{{ iso }}" onClick="editTaskForm(this)">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button type="button" class="close text-muted" onClick="deleteTask({{ task.id }})">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
                 </div>
-               <div class="edit-task-form" style="display: none;">
-                    <form method="POST">
-                      <input type="hidden" name="action" value="edit_task">
-                      <input type="hidden" name="task_id" value="{{ task.id }}">
-                      <input type="text" name="task" id="task" class="task-data-input" autocomplete="off" placeholder="Wpisz treść zadania..."><br />
-                      <label for="list" class="text-muted"><i class="fa-solid fa-hashtag"></i></label>
-                      <select name="list" id="list">
-                      {% for list in user.lists %}
-                        {% if list.is_default == True %}
-                          <option value="{{ list.id }}" selected>{{ list.list_title }}</option>
-                        {% else %}
-                          <option value="{{ list.id }}">{{ list.list_title }}</option>
-                        {% endif %}
-                      {% endfor %}
-                      </select>
-                      <span class="text-muted">
-                        <i class="fa-solid fa-calendar-days"></i>
-                        <input type="date" name="deadline_date" id="deadline_date" class="deadline-date">
-                      </span>
-                      <span class="text-muted">
-                        <i class="fa-solid fa-clock"></i>
-                        <input type="time" name="deadline_time" id="deadline_time" class="deadline-time">
-                      </span>
-                      <label for="reminder" class="text-muted"><i class="fa-solid fa-bell"></i></label>
-                      <input type="checkbox" name="reminder" id="reminder">
-                      <div class="submit-add-task-form-buttons">
-                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cancelEditTaskForm(this)">Anuluj</button>
-                        <button type="submit" class="btn btn-primary btn-sm">Edytuj zadanie</button>
-                      </div>
-                    </form>
+                <!-- formularz edytowania zadania -->
+                <div class="edit-task-form" style="display: none;">
+                  <form method="POST">
+                    <input type="hidden" name="action" value="edit_task">
+                    <input type="hidden" name="task_id" value="{{ task.id }}">
+                    <input type="text" name="task" id="task" class="task-data-input" autocomplete="off" placeholder="Wpisz treść zadania..."><br />
+                    <label for="list" class="text-muted"><i class="fa-solid fa-hashtag"></i></label>
+                    <select name="list" id="list">
+                    {% for list in user.lists %}
+                      {% if list.is_default == True %}
+                        <option value="{{ list.id }}" selected>{{ list.list_title }}</option>
+                      {% else %}
+                        <option value="{{ list.id }}">{{ list.list_title }}</option>
+                      {% endif %}
+                    {% endfor %}
+                    </select>
+                    <span class="text-muted">
+                      <i class="fa-solid fa-calendar-days"></i>
+                      <input type="date" name="deadline_date" id="deadline_date" class="deadline-date">
+                    </span>
+                    <span class="text-muted">
+                      <i class="fa-solid fa-clock"></i>
+                      <input type="time" name="deadline_time" id="deadline_time" class="deadline-time">
+                    </span>
+                    <label for="reminder" class="text-muted"><i class="fa-solid fa-bell"></i></label>
+                    <input type="checkbox" name="reminder" id="reminder">
+                    <div class="submit-add-task-form-buttons">
+                      <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cancelEditTaskForm(this)">Anuluj</button>
+                      <button type="submit" class="btn btn-primary btn-sm">Edytuj zadanie</button>
+                    </div>
+                  </form>
                 </div>
                 </li>
             {% endfor %}
             <div class="done-tasks" style="display: none;">
             {% for task in tasks_by_date[iso] if task.if_done %}
               <li class="task">
+                <!-- info o zadaniu -->
                 <div class="task-header">
-                <form method="POST" action="{{ url_for('views.update_task_calendar', task_id=task.id) }}" class="form-check">
-                  <input type="checkbox" name="if_done" value="true" class="form-check-input" {% if task.if_done %}checked{% endif %} onchange="this.form.submit()">
-                </form>
-                <p class="task-data">{{ task.data }}</p>
-                <span class="task-info text-muted">
-                <i class="fa-solid fa-hashtag"></i> {{ task.list.list_title }}
-                <i class="fa-solid fa-clock"></i> {{ task.deadline_time.strftime('%H:%M') if task.deadline_time else '-' }}
-                {% if task.reminder %} <i class="fa-solid fa-bell"></i> {% endif %}
-                </span>
-                <button type="button" class="edit text-muted" data-date="{{ iso }}" onClick="editTaskForm(this)">
-                <i class="fa-solid fa-pen-to-square"></i>
-                </button>
-                <button type="button" class="close text-muted" onClick="deleteTask({{ task.id }})">
-                <span aria-hidden="true">&times;</span>
-                </button>
+                  <form method="POST" action="{{ url_for('views.update_task_calendar', task_id=task.id) }}" class="form-check">
+                    <input type="checkbox" name="if_done" value="true" class="form-check-input" {% if task.if_done %}checked{% endif %} onchange="this.form.submit()">
+                  </form>
+                  <p class="task-data">{{ task.data }}</p>
+                  <span class="task-info text-muted">
+                    <i class="fa-solid fa-hashtag"></i> {{ task.list.list_title }}
+                    <i class="fa-solid fa-clock"></i> {{ task.deadline_time.strftime('%H:%M') if task.deadline_time else '-' }}
+                  {% if task.reminder %} <i class="fa-solid fa-bell"></i> {% endif %}
+                  </span>
+                  <button type="button" class="edit text-muted" data-date="{{ iso }}" onClick="editTaskForm(this)">
+                    <i class="fa-solid fa-pen-to-square"></i>
+                  </button>
+                  <button type="button" class="close text-muted" onClick="deleteTask({{ task.id }})">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
                 </div>
-              <div class="edit-task-form" style="display: none;">
-                    <form method="POST">
-                      <input type="hidden" name="action" value="edit_task">
-                      <input type="hidden" name="task_id" value="{{ task.id }}">
-                      <input type="text" name="task" id="task" class="task-data-input" autocomplete="off" placeholder="Wpisz treść zadania..."><br />
-                      <label for="list" class="text-muted"><i class="fa-solid fa-hashtag"></i></label>
-                      <select name="list" id="list">
-                      {% for list in user.lists %}
-                        {% if list.is_default == True %}
-                          <option value="{{ list.id }}" selected>{{ list.list_title }}</option>
-                        {% else %}
-                          <option value="{{ list.id }}">{{ list.list_title }}</option>
-                        {% endif %}
-                      {% endfor %}
-                      </select>
-                      <span class="text-muted">
-                        <i class="fa-solid fa-calendar-days"></i>
-                        <input type="date" name="deadline_date" id="deadline_date" class="deadline-date">
-                      </span>
-                      <span class="text-muted">
-                        <i class="fa-solid fa-clock"></i>
-                        <input type="time" name="deadline_time" id="deadline_time" class="deadline-time">
-                      </span>
-                      <label for="reminder" class="text-muted"><i class="fa-solid fa-bell"></i></label>
-                      <input type="checkbox" name="reminder" id="reminder">
-                      <div class="submit-add-task-form-buttons">
-                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cancelEditTaskForm(this)">Anuluj</button>
-                        <button type="submit" class="btn btn-primary btn-sm">Edytuj zadanie</button>
-                      </div>
-                    </form>
+                <!-- formularz edytowania zadania -->
+                <div class="edit-task-form" style="display: none;">
+                  <form method="POST">
+                    <input type="hidden" name="action" value="edit_task">
+                    <input type="hidden" name="task_id" value="{{ task.id }}">
+                    <input type="text" name="task" id="task" class="task-data-input" autocomplete="off" placeholder="Wpisz treść zadania..."><br />
+                    <label for="list" class="text-muted"><i class="fa-solid fa-hashtag"></i></label>
+                    <select name="list" id="list">
+                    {% for list in user.lists %}
+                      {% if list.is_default == True %}
+                        <option value="{{ list.id }}" selected>{{ list.list_title }}</option>
+                      {% else %}
+                        <option value="{{ list.id }}">{{ list.list_title }}</option>
+                      {% endif %}
+                    {% endfor %}
+                    </select>
+                    <span class="text-muted">
+                      <i class="fa-solid fa-calendar-days"></i>
+                      <input type="date" name="deadline_date" id="deadline_date" class="deadline-date">
+                    </span>
+                    <span class="text-muted">
+                      <i class="fa-solid fa-clock"></i>
+                      <input type="time" name="deadline_time" id="deadline_time" class="deadline-time">
+                    </span>
+                    <label for="reminder" class="text-muted"><i class="fa-solid fa-bell"></i></label>
+                    <input type="checkbox" name="reminder" id="reminder">
+                    <div class="submit-add-task-form-buttons">
+                      <button type="button" class="btn btn-outline-secondary btn-sm" onclick="cancelEditTaskForm(this)">Anuluj</button>
+                      <button type="submit" class="btn btn-primary btn-sm">Edytuj zadanie</button>
+                    </div>
+                  </form>
                 </div>
                 </li>
             {% endfor %}
@@ -263,6 +268,7 @@
     {% if tasks_by_date[iso] | selectattr("if_done") | list %}
     <button type="button" id="show-done-tasks" class="btn btn-outline-secondary btn-sm" onclick="showDoneTasks(this)">Pokaż wykonane zadania</button>
     {% endif %}
+
     <!-- formularz dodawania zadania -->
     <div class="add-task-form" style="display: none;">
         <form method="POST">
@@ -294,166 +300,158 @@
           </div>
         </form>
     </div>
-
-
     {% endfor %}
   </div>
 </div>
 
+<!-- JAVA SCRIPT -->
 <script>
-
-  // inicjalizacja FullCalendar
-  document.addEventListener('DOMContentLoaded', function () {
-    var calendarEl = document.getElementById('calendar');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-      initialView: 'dayGridMonth',
-      locale: 'pl',
-      firstDay: 1,
-      headerToolbar: {
-        left: 'prev today',
-        center: 'title',
-        right: 'next'
-      },
-      buttonText: {
+// inicjalizacja FullCalendar
+document.addEventListener('DOMContentLoaded', () => {
+  const calendarEl = document.getElementById('calendar');
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    locale: 'pl',
+    firstDay: 1,
+    headerToolbar: {
+      left: 'prev today',
+      center: 'title',
+      right: 'next'
+    },
+    buttonText: {
       today: 'dziś'
-      },
-      contentHeight: 'auto',
-      fixedWeekCount: false,
-      events: {{ events|tojson }},
-      eventDisplay: 'none',
-      dateClick: function(info) {
-        const dateId = 'day-' + info.dateStr;
-        const target = document.getElementById(dateId);
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
+    },
+    contentHeight: 'auto',
+    fixedWeekCount: false,
+    events: {{ events|tojson }},
+    eventDisplay: 'none',
+    dateClick: (info) => {
+      const dateId = 'day-' + info.dateStr;
+      const target = document.getElementById(dateId);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
-    });
-    calendar.render();
+    }
   });
+  calendar.render();
+});
 
-  // pokaż poprzednie dni
-  function togglePastDays() {
-    const pastDays = document.getElementById('past-days');
-    const toggleButton = document.getElementById('toggle-past-days');
-    const moreButton = document.getElementById('toggle-more-past-days');
+// pokaż poprzednie dni
+const togglePastDays = () => {
+  const pastDays = document.getElementById('past-days');
+  const toggleButton = document.getElementById('toggle-past-days');
+  const moreButton = document.getElementById('toggle-more-past-days');
 
-    if (pastDays.style.display === 'none') {
-      pastDays.style.display = 'block';
-      toggleButton.textContent = 'Ukryj poprzednie dni';
-      moreButton.style.display = 'inline-block';
-    } else {
-      pastDays.style.display = 'none';
-      toggleButton.textContent = 'Pokaż poprzednie dni';
-      moreButton.style.display = 'none';
-    }
+  if (pastDays.style.display === 'none') {
+    pastDays.style.display = 'block';
+    toggleButton.textContent = 'Ukryj poprzednie dni';
+    moreButton.style.display = 'inline-block';
+  } else {
+    pastDays.style.display = 'none';
+    toggleButton.textContent = 'Pokaż poprzednie dni';
+    moreButton.style.display = 'none';
+  }
+};
+
+// pokaż więcej poprzednich dni
+let pastVisibleCount = 10;
+
+const showMorePastDays = () => {
+  const allPast = Array.from(document.querySelectorAll('.past-day'));
+  const total = allPast.length;
+  const start = Math.max(0, total - 10 - pastVisibleCount);
+  const end = total - pastVisibleCount;
+
+  for (let i = start; i < end; i++) {
+    allPast[i].style.display = 'block';
   }
 
-  // pokaż więcej poprzednich dni
-  let pastVisibleCount = 10;
-  
-  function showMorePastDays() {
-    const allPast = Array.from(document.querySelectorAll('.past-day'));
-    const total = allPast.length;
-    const start = Math.max(0, total - 10 - pastVisibleCount);
-    const end = total - pastVisibleCount;
+  pastVisibleCount += (end - start);
 
-    for (let i = start; i < end; i++) {
-      allPast[i].style.display = 'block';
-    }
-
-    pastVisibleCount += (end - start);
-
-    if (pastVisibleCount >= total) {
-      document.getElementById('toggle-more-past-days').style.display = 'none';
-    }
+  if (pastVisibleCount >= total) {
+    document.getElementById('toggle-more-past-days').style.display = 'none';
   }
+};
 
-  // formularz dodawania zadania
-  function addTaskForm(button) {
-    const currentDay = button.closest('.day'); // dzien, w ktorym kliknieto
-    const formContainer = currentDay.querySelector('.add-task-form');
-    const form = formContainer.querySelector('form');
-    const dateInput = form.querySelector('input[type="date"]');
-    const selectedDate = button.getAttribute('data-date');
+// formularz dodawania zadania
+const addTaskForm = (button) => {
+  const currentDay = button.closest('.day'); 
+  const formContainer = currentDay.querySelector('.add-task-form');
+  const form = formContainer.querySelector('form');
+  const dateInput = form.querySelector('input[type="date"]');
+  const selectedDate = button.getAttribute('data-date');
 
-    // Ukryj wszystkie formularze i pokaż ich przyciski "Dodaj zadanie"
-    document.querySelectorAll('.add-task-form').forEach(fc => fc.style.display = 'none');
-    document.querySelectorAll('.toggle-add-task-form').forEach(btn => btn.style.display = 'inline-block');
-    document.querySelectorAll('.edit-task-form').forEach(fc => fc.style.display = 'none');
-    document.querySelectorAll('.edit').forEach(btn => btn.style.display = 'inline-block');
+  document.querySelectorAll('.add-task-form').forEach(fc => fc.style.display = 'none');
+  document.querySelectorAll('.toggle-add-task-form').forEach(btn => btn.style.display = 'inline-block');
+  document.querySelectorAll('.edit-task-form').forEach(fc => fc.style.display = 'none');
+  document.querySelectorAll('.edit').forEach(btn => btn.style.display = 'inline-block');
 
-    // Pokaż tylko formularz w bieżącym dniu
-    formContainer.style.display = 'block';
-    button.style.display = 'none';
+  formContainer.style.display = 'block';
+  button.style.display = 'none';
 
-    if (!dateInput.value) dateInput.value = selectedDate;
+  if (!dateInput.value) dateInput.value = selectedDate;
 
-    // Scroll do formularza
-    formContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  formContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
+
+// anulowanie dodawania zadania
+const cancelTaskForm = (button) => {
+  const form = button.closest('form');
+  const formContainer = form.parentElement;
+  const currentDay = formContainer.closest('.day');
+  const toggleButton = currentDay.querySelector('.toggle-add-task-form');
+
+  form.reset();
+  formContainer.style.display = 'none';
+  toggleButton.style.display = 'inline-block';
+};
+
+// formularz edytowania zadania
+const editTaskForm = (button) => {
+  const currentTask = button.closest('.task'); 
+  const formContainer = currentTask.querySelector('.edit-task-form');
+  const form = formContainer.querySelector('form');
+  const dateInput = form.querySelector('input[type="date"]');
+  const selectedDate = button.getAttribute('data-date');
+
+  document.querySelectorAll('.edit-task-form').forEach(fc => fc.style.display = 'none');
+  document.querySelectorAll('.edit').forEach(btn => btn.style.display = 'inline-block');
+  document.querySelectorAll('.add-task-form').forEach(fc => fc.style.display = 'none');
+  document.querySelectorAll('.toggle-add-task-form').forEach(btn => btn.style.display = 'inline-block');
+
+  formContainer.style.display = 'block';
+  button.style.display = 'none';
+
+  if (!dateInput.value) dateInput.value = selectedDate;
+
+  formContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
+
+// anulowanie edytowania zadania
+const cancelEditTaskForm = (button) => {
+  const form = button.closest('form');
+  const formContainer = form.parentElement;
+  const currentTask = formContainer.closest('.task');
+  const toggleButton = currentTask.querySelector('.edit');
+
+  form.reset();
+  formContainer.style.display = 'none';
+  toggleButton.style.display = 'inline-block';
+};
+
+// pokaż/ukryj wykonane zadania
+const showDoneTasks = (button) => {
+  const dayContainer = button.closest('.day');
+  const doneTasks = dayContainer.querySelector('.done-tasks');
+
+  if (doneTasks.style.display === 'none') {
+    doneTasks.style.display = 'block';
+    button.textContent = 'Ukryj wykonane zadania';
+  } else {
+    doneTasks.style.display = 'none';
+    button.textContent = 'Pokaż wykonane zadania';
   }
-
-  // anulowanie dodawania zadania
-  function cancelTaskForm(button) {
-    const form = button.closest('form');
-    const formContainer = form.parentElement;
-    const currentDay = formContainer.closest('.day');
-    const toggleButton = currentDay.querySelector('.toggle-add-task-form');
-
-    form.reset();
-    formContainer.style.display = 'none';
-    toggleButton.style.display = 'inline-block';
-  }
-
-    // formularz edytowania zadania
-  function editTaskForm(button) {
-    const currentTask = button.closest('.task'); // dzien, w ktorym kliknieto
-    const formContainer = currentTask.querySelector('.edit-task-form');
-    const form = formContainer.querySelector('form');
-    const dateInput = form.querySelector('input[type="date"]');
-    const selectedDate = button.getAttribute('data-date');
-
-    // Ukryj wszystkie formularze i pokaż ich przyciski "Dodaj zadanie"
-    document.querySelectorAll('.edit-task-form').forEach(fc => fc.style.display = 'none');
-    document.querySelectorAll('.edit').forEach(btn => btn.style.display = 'inline-block');
-    document.querySelectorAll('.add-task-form').forEach(fc => fc.style.display = 'none');
-    document.querySelectorAll('.toggle-add-task-form').forEach(btn => btn.style.display = 'inline-block');
-
-    // Pokaż tylko formularz w bieżącym dniu
-    formContainer.style.display = 'block';
-    button.style.display = 'none';
-
-    if (!dateInput.value) dateInput.value = selectedDate;
-
-    // Scroll do formularza
-    formContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }
-
-  // anulowanie edytowania zadania
-  function cancelEditTaskForm(button) {
-    const form = button.closest('form');
-    const formContainer = form.parentElement;
-    const currentTask = formContainer.closest('.task');
-    const toggleButton = currentTask.querySelector('.edit');
-
-    form.reset();
-    formContainer.style.display = 'none';
-    toggleButton.style.display = 'inline-block';
-  }
-
-  // pokaż/ukryj wykonane zadania
-  function showDoneTasks(button) {
-    const dayContainer = button.closest('.day');
-    const doneTasks = dayContainer.querySelector('.done-tasks');
-
-    if (doneTasks.style.display === 'none') {
-      doneTasks.style.display = 'block';
-      button.textContent = 'Ukryj wykonane zadania';
-    } else {
-      doneTasks.style.display = 'none';
-      button.textContent = 'Pokaż wykonane zadania';
-    }
-  }
+};
 
 </script>
 

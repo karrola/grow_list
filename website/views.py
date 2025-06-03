@@ -26,12 +26,12 @@ def home():
         list_title = request.form.get('list_title', '').strip()
 
         if not list_title:
-            flash('Too short!', category='error')
+            flash('Nazwa listy musi mieć przynajmniej 1 znak!', category='error')
         else: 
             new_list = List(user_id=current_user.id, list_title=list_title)
             db.session.add(new_list)
             db.session.commit()
-            flash('List added!', category='success')
+            flash('Lista została dodana!', category='success')
             return redirect(url_for('views.go_to_list', list_id = new_list.id))
         
     user_lists = List.query.filter_by(user_id=current_user.id).all()
@@ -52,7 +52,7 @@ def show_list(list_id):
     current_list = List.query.filter_by(id=list_id, user_id=current_user.id).first()
 
     if not current_list:
-        flash("List not found.", category="error")
+        flash('Nie znaleziono listy.', category='error')
         return redirect(url_for('views.home'))
     
     if request.method == 'POST':
@@ -60,7 +60,7 @@ def show_list(list_id):
         reminder = request.form.get('reminder')
 
         if not task_data:
-            flash('Too short!', category='error')
+            flash('Nazwa zadania musi mieć przynajmniej 1 znak!', category='error')
         else:
             if reminder:
                 if request.form.get('deadline_date') and request.form.get('deadline_time'):
@@ -86,7 +86,7 @@ def show_list(list_id):
 
             db.session.add(new_task)
             db.session.commit()
-            flash('Task added!', category='success')
+            flash('Dodano zadanie!', category='success')
             return redirect(url_for('views.show_list', list_id=list_id), code=303)
 
     return render_template('list.html', list=current_list, user=current_user)
@@ -162,7 +162,7 @@ def delete_task():
 @views.route("/calendar", methods=['POST', 'GET'])
 @login_required
 def calendar():
-    # Ustalamy zakres dat: od dziś do roku w przód
+    # od dziś do roku w przód
     today = datetime.now().date()
     start_date = today - timedelta(days=365)
     end_date = today + timedelta(days=365)
@@ -187,11 +187,6 @@ def calendar():
                 tasks_by_date[ds].append(task)
 
     tasks_by_date = dict(tasks_by_date)
-    
-    # Zakres od roku temu do roku wprzód
-    today = datetime.now().date()
-    start_date = today - timedelta(days=365)
-    end_date = today + timedelta(days=365)
 
     all_days = [
         start_date + timedelta(days=i)
@@ -227,7 +222,7 @@ def calendar():
             reminder = request.form.get('reminder')
 
             if not task_data:
-                flash('Too short!', category='error')
+                flash('Zadanie musi mieć przynajmniej 1 znak!', category='error')
             else:
                 if reminder:
                     if request.form.get('deadline_date') and request.form.get('deadline_time'):
@@ -253,7 +248,7 @@ def calendar():
 
             db.session.add(new_task)
             db.session.commit()
-            flash('Task added!', category='success')
+            flash('Dodano zadanie!', category='success')
 
             return redirect(url_for('views.calendar'), code=303)
         elif action == 'edit_task':
@@ -271,7 +266,7 @@ def calendar():
                 task.data = task_data
             else: 
                 task.data = task.data
-                
+
             if reminder:
                 if request.form.get('deadline_date') and request.form.get('deadline_time'):
                     task.deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
@@ -339,17 +334,31 @@ def water_plant():
 @views.route('/put_plant_on_shelf', methods=['POST'])
 @login_required
 def put_plant_on_shelf():
-    if current_user.plant_growth >= 3*current_user.daily_task_goal or current_user.plant_wither_stage == 3:
+    user = current_user
+    if user.plant_growth >= 3*user.daily_task_goal or user.plant_wither_stage == 3:
+        if user.plant_wither_stage < user.plant_growth:
+            final_growth = 1
+        elif user.plant_wither_stage < 2*user.plant_growth:
+            final_growth = 2
+        elif user.plant_wither_stage < 3*user.plant_growth:
+            final_growth = 3
+        else:
+            final_growth = 4
         new_plant = Plant(
-            finished_at=datetime.now(),
-            owner=current_user
+            created_at = user.plant_created_at,
+            finished_at = datetime.now(),
+            user_id = user.id,
+            final_growth = final_growth,       
+            final_wither_stage = user.plant_wither_stage
         )
         db.session.add(new_plant)
 
-        current_user.plant_growth = 0
-        current_user.plant_wither_stage = 0
-        current_user.plant_last_watered = None
+        user.plant_created_at = datetime.now()
+        user.plant_growth = 0
+        user.plant_wither_stage = 0
+        user.plant_unwatered_days = 0
         db.session.commit()
+    flash('Roślinka została odłożona na półkę!', category='success')
     next_page = request.form.get('next') or url_for('home')
     return redirect(next_page)
 
@@ -360,7 +369,7 @@ def plant_shelf():
     plants = user.plants
     return render_template("plant_shelf.html", user=current_user, plants=plants)
 
-@views.route("/update-daily-task-goal", methods=["POST"])
+@views.route('/update-daily-task-goal', methods=['POST'])
 @login_required
 def update_goal():
     user = current_user

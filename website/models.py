@@ -25,6 +25,7 @@ class User(db.Model, UserMixin):
     plant_rescue_progress = db.Column(db.Integer, default=0)
     plant_unwatered_days = db.Column(db.Integer, default=0)
     plant_withered_notification_sent = db.Column(db.Boolean, default=False)
+    plant_created_at = db.Column(db.DateTime)
 
 class Task(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -45,3 +46,5 @@ class Plant(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.now)
     finished_at = db.Column(db.DateTime)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    final_growth = db.Column(db.Integer)
+    final_wither_stage = db.Column(db.Integer)

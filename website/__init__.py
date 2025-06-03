@@ -8,8 +8,10 @@ from flask_mail import Mail, Message
 from dotenv import load_dotenv
 import logging
 
+# zmienne środowiskowe
 load_dotenv()
 
+# baza danych i mail
 db = SQLAlchemy()
 mail = Mail()
 
@@ -38,11 +40,12 @@ def create_app():
     # blueprints
     from .views import views
     from .auth import auth
-    from .test import test #testowe ścieżki do usychania rośliny
+    from .test import test # testowe ścieżki 
     app.register_blueprint(views, url_prefix='/')
     app.register_blueprint(auth, url_prefix='/')
-    app.register_blueprint(test, url_prefix='/') #testowe ścieżki do usychania rośliny
+    app.register_blueprint(test, url_prefix='/') # testowe ścieżki 
 
+    # no cache
     @app.after_request
     def add_no_cache_headers(response):
         response.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0"
@@ -63,6 +66,7 @@ def create_app():
     def load_user(id):
         return User.query.get(int(id))
     
+    # scheduler
     from .scheduler import start_scheduler
     #start_scheduler(app)
 

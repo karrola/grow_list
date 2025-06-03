@@ -74,7 +74,7 @@
   flex-shrink: 0;
 }
 
-/* formularz dodawania zadania */
+/* formularz dodawania i edytowania zadania */
 .add-task-form, .edit-task-form {
     border: 1px solid #ddd;
     border-radius: 0.375rem;

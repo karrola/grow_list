@@ -7,8 +7,8 @@
 
 /* przyciski FullCalendar ostylowane jak z Bootstrapa (kolory dopasowane do stylu aplikacji) */
 .fc .fc-button {
-  background-color: #A83A31;         /* ceglasty primary */
-  color: #FDF9F4;                    /* jasny, ciepły tekst */
+  background-color: #A83A31;         
+  color: #FDF9F4;                   
   border: 1px solid #A83A31;
   border-radius: 0.375rem;
   padding: 0.375rem 0.75rem;
@@ -18,27 +18,24 @@
 
 .fc .fc-button:hover,
 .fc .fc-button:focus {
-  background-color: #8B2F28;         /* ciemniejszy ceglasty */
-  border-color: #75261F;             /* jeszcze ciemniejszy brzeg */
+  background-color: #8B2F28;        
+  border-color: #75261F;             
 }
 
-/* Styl dla przycisku "Today" */
 .fc .fc-today-button {
-  background-color: #e6e0a3;     /* delikatna zieleń, pasująca do sekcji z roślinką */
-  color: #3F3F1F;                /* ciemniejszy oliwkowy tekst */
-  border: 1px solid #d4c963;     /* lekko ciemniejszy zielony */
+  background-color: #e6e0a3;     
+  color: #3F3F1F;                
+  border: 1px solid #d4c963;     
   transition: background-color 0.2s ease;
 }
 
-/* Hover/Focus dla "Today" */
 .fc .fc-today-button:hover,
 .fc .fc-today-button:focus {
-  background-color: #d4c963;     /* ciemniejszy zielony na hover */
+  background-color: #d4c963;     
   border-color: #c3b84f;
   color: #2F2F1A;
 }
 
-/* Disabled (gdy jesteśmy już na dzisiejszym dniu) */
 .fc .fc-today-button:disabled {
   background-color: #ccc9a5;
   border-color: #ccc9a5;
@@ -49,12 +46,12 @@
 
 /* podświetlenie dnia dzisiejszego w kalendarzu */
 .fc .fc-day-today {
-  background-color: #e6e0a3 !important;   /* jasny żółtawy highlight */
-  border: 1px solid #A83A31;              /* pasująca cegła */
+  background-color: #e6e0a3 !important;   
+  border: 1px solid #A83A31;              
 }
 
 .fc .fc-daygrid-day.fc-day-today .fc-daygrid-day-number {
-  color: #A83A31;                         /* podkreślony dzień w ceglastym */
+  color: #A83A31;                         
   font-weight: bold;
 }
 
@@ -135,12 +132,13 @@
   border: none;
   font-size: 0.8rem;
 }
+
 .close {
   margin-left: 1rem;
   flex-shrink: 0;
 }
 
-/*formularz dodawania zadania*/
+/* formularz dodawania i edytowania zadania */
 .add-task-form, .edit-task-form {
   border: 1px solid #ddd;
   border-radius: 0.375rem;

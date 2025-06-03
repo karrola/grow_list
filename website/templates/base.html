@@ -35,14 +35,14 @@
   {% with messages = get_flashed_messages(with_categories=true) %} {% if
     messages %} {% for category, message in messages %} {% if category ==
     'error' %}
-    <div class="alert alert-danger alert-dismissable fade show" role="alert" style="position: absolute; top: 0; left: 0; z-index: 2; width: 100vw">
+    <div class="alert alert-danger alert-dismissable fade show" role="alert">
       {{ message }}
       <button type="button" class="close" data-dismiss="alert">
         <span aria-hidden="true">&times;</span>
       </button>
     </div>
     {% else %}
-    <div class="alert alert-success alert-dismissable fade show" role="alert" style="position: absolute; top: 0; left: 0; z-index: 2; width: 100vw">
+    <div class="alert alert-success alert-dismissable fade show" role="alert">
       {{ message }}
       <button type="button" class="close" data-dismiss="alert">
         <span aria-hidden="true">&times;</span>
@@ -62,6 +62,7 @@
         <div class="nav">
           <div class=" nav-main">
             <button class="nav-button"><a class="link" id="home" href="/calendar"><i class="fa-solid fa-calendar"></i>Kalendarz</a></button>
+            <button class="nav-button"><a class="link" id="home" href="/plant-shelf"><i class="fa-solid fa-seedling"></i>Moja półka</a></button>
             {% for list in user.lists if list.is_default %}
               <button class="nav-button"><a class="link" id="list" href="{{ url_for('views.show_list', list_id=list.id) }}"><i class="fa-solid fa-inbox"></i>{{ list.list_title }}</a></button>
             {% endfor %}
@@ -152,7 +153,7 @@
       </div>
       {% endif %}
       
-      <!-- podlewanie -->
+      <!-- podlewanie i odstawianie na półkę-->
       {% if (user.plant_growth < 3*user.daily_task_goal) and (user.plant_wither_stage < 3) %}
       <form method="POST" action="{{ url_for('views.water_plant') }}">
         <input type="hidden" name="next" value="{{ request.path }}">
@@ -177,7 +178,7 @@
         5. Gdy przez 1 dzień nie dostarczysz roślince odpowiedniej ilości wody, nic się nie stanie. <br>
         6. Po dwóch dniach bez wody roślinka przejdzie w fazę usychania, a po czterech - będzie już kompletnie uschnięta. <br>
         7. Gdy roślinka jest w fazie usychania, musisz dostarczyć jej {{ (user.daily_task_goal * 0.5 + 0.999) | int }} punktów wody, aby ją uratować. <br>
-        8. Roślinki, która uschła niestety nie da się uratować. Trafi na półkę razem z innymi, a ty dostaniesz kolejną roślinkę - ale opiekuj się nią dobrze! <br>
+        8. Roślinki, która uschła, niestety nie da się uratować. Trafi na półkę razem z innymi, a ty dostaniesz kolejną roślinkę - ale opiekuj się nią dobrze! <br>
       </div>
       {% endif %}
     </div>
@@ -200,32 +201,38 @@
     integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
     crossorigin="anonymous"
   ></script>
+
+  <!-- tooltipy -->
   <script>
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
   </script>
+
+  <!-- JAVA SCRIPT -->
   <script>
-    // usuwanie zadań
-    function deleteTask(taskId) {
-      fetch("/delete-task", {
-        method: "POST",
-        body: JSON.stringify({ taskId: taskId }),
-      }).then((_res) => {
+  // usuwanie zadań
+  const deleteTask = (taskId) => {
+    fetch("/delete-task", {
+      method: "POST",
+      body: JSON.stringify({ taskId: taskId }),
+    }).then(() => {
       window.location.reload();
-      });
-    }
-    // automatyczne usuwanie alertów
-    document.addEventListener('DOMContentLoaded', () => {
-      setTimeout(() => {
-        document.querySelectorAll('.alert').forEach(el => {
-          el.style.transition = 'opacity 0.5s ease';
-          el.style.opacity = '0';
-          el.addEventListener('transitionend', () => el.remove());
-        });
-      }, 2000);
     });
-  // pokaz/ukryj poradnik
-  function showInfo() {
+  };
+
+  // automatyczne usuwanie alertów
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      document.querySelectorAll('.alert').forEach((el) => {
+        el.style.transition = 'opacity 0.5s ease';
+        el.style.opacity = '0';
+        el.addEventListener('transitionend', () => el.remove());
+      });
+    }, 2000);
+  });
+
+  // pokaż/ukryj poradnik
+  const showInfo = () => {
     const button = document.getElementById('show-info');
     const info = document.getElementById('info');
 
@@ -236,12 +243,13 @@
       info.style.display = 'none';
       button.textContent = 'Pokaż jak hodować roślinkę';
     }
-  }
+  };
+
   // zmiana dziennego celu
-  function toggleGoalForm() {
+  const toggleGoalForm = () => {
     document.getElementById("goal-text").style.display = "none";
     document.getElementById("goal-form").style.display = "inline";
-  }
+  };
   </script>
 
   </body>

@@ -1,0 +1,29 @@
+.title {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.plants{
+    width: auto;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
+.plant{
+    width: 17rem;
+    list-style: none;
+}
+
+.date{
+    width: 17rem;
+    margin-top: 0.7rem;
+    margin-bottom: 0;
+    text-align: center;
+}

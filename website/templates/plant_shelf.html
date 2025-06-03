@@ -1,16 +1,41 @@
 {% extends "base.html" %}
 {% block title %}Półka{% endblock %}
 {% block head %}
-<link href="{{ url_for('static', filename='list.css') }}" rel="stylesheet" />
+<link href="{{ url_for('static', filename='plant_shelf.css') }}" rel="stylesheet" />
 {% endblock %}
 
 {% block content %}
-<h2 class="list-title"> Moja półka </h2>
+<h2 class="title"> Moja półka </h2>
 
-<div>
+
 <ul class="plants" id="plants">
   {% for plant in plants %}
-  <li class="plant">{{ plant.finished_at }}</li>
+  <li class="plant">
+    {% if plant.final_wither_stage == 3 %}
+      {% if plant.final_growth == 1 %}
+        <div class="plant-img-container"><img src="{{ url_for('static', filename='images/plant_1_dead.png') }}" class="plant-img plant-img--1" alt="Uschnięta roślinka"></div>
+      {% elif plant.final_growth == 2 %}
+        <div class="plant-img-container"><img src="{{ url_for('static', filename='images/plant_2_dead.png') }}" class="plant-img plant-img--2" alt="Uschnięta roślinka"></div>
+      {% else %}
+        <div class="plant-img-container"><img src="{{ url_for('static', filename='images/plant_3_dead.png') }}" class="plant-img plant-img--3" alt="Uschnięta roślinka"></div>
+      {% endif %}
+    {% else %}
+      {% if plant.final_growth == 1 %}
+        <div class="plant-img-container"><img src="{{ url_for('static', filename='images/plant_1.png') }}" class="plant-img plant-img--1" alt="1. faza rozwoju"></div>
+      {% elif plant.final_growth == 2 %}
+        <div class="plant-img-container"><img src="{{ url_for('static', filename='images/plant_2.png') }}" class="plant-img plant-img--2" alt="2. faza rozwoju"></div>
+      {% elif plant.final_growth == 3 %}
+        <div class="plant-img-container"><img src="{{ url_for('static', filename='images/plant_3.png') }}" class="plant-img plant-img--3" alt="3. faza rozwoju"></div>
+      {% else %}
+        <div class="plant-img-container"><img src="{{ url_for('static', filename='images/plant_4.png') }}" class="plant-img plant-img--4" alt="4. faza rozwoju"></div>
+      {% endif %}
+    {% endif %}
+    
+    <p class="date">Początek wzrostu: <br>{{ plant.created_at.strftime('%d-%m-%Y %H:%M') }}</p>
+    <p class="date">Koniec wzrostu: <br>{{ plant.finished_at.strftime('%d-%m-%Y %H:%M') }}</p>
+  </li>
   {% endfor %}
-</div>
+</ul>
+  
+
 {% endblock %}

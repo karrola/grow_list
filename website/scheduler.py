@@ -11,7 +11,6 @@ def send_email(to, subject, body):
     msg.body = body
     mail.send(msg)
 
-
 def check_tasks_and_send_emails():
     with current_app.app_context():
         now = datetime.now()
@@ -43,13 +42,16 @@ def update_plant_health_status():
     for user in users:
         if user.plant_growth is None or user.plant_growth == 3 * user.daily_task_goal:
             continue
-
-        # Zadania wykonane wczoraj
+        
+        # do testów
+        tasks_completed_yesterday = 0
+        """
+        wersja własciwa:
         tasks_completed_yesterday = Task.query.filter(
             Task.user_id == user.id,
             Task.completed_at >= datetime.combine(yesterday, time.min),
             Task.completed_at <=  datetime.combine(yesterday, time.max)
-        ).count()
+        ).count()"""
 
         water_needed = math.ceil(user.daily_task_goal / 2)
 
@@ -63,7 +65,6 @@ def update_plant_health_status():
                 user.plant_wither_stage = 2
             elif user.plant_unwatered_days >= 4:
                 user.plant_wither_stage = 3
-    
     
         if user.plant_wither_stage > 0 and user.plant_wither_stage != 3:
             send_email(
