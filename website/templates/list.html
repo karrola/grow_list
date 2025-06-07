@@ -76,6 +76,7 @@
 <!-- formularz dodawania zadania -->
 <div class="add-task-form" id="add-task-form" style="display: none;">
     <form method="POST">
+      <input type="hidden" name="action" value="add_task">
       <input type="text" name="task" id="task" class="task-data-input" autocomplete="off" placeholder="Wpisz treść zadania..." required><br>
       <span class="text-muted">
         <i class="fa-solid fa-calendar-days"></i>
@@ -128,16 +129,6 @@
         <input type="hidden" name="action" value="edit_task">
         <input type="hidden" name="task_id" value="{{ task.id }}">
         <input type="text" name="task" id="task" class="task-data-input" autocomplete="off" placeholder="Wpisz treść zadania..."><br />
-        <label for="list" class="text-muted"><i class="fa-solid fa-hashtag"></i></label>
-        <select name="list" id="list">
-        {% for list in user.lists %}
-          {% if list.is_default == True %}
-            <option value="{{ list.id }}" selected>{{ list.list_title }}</option>
-          {% else %}
-            <option value="{{ list.id }}">{{ list.list_title }}</option>
-          {% endif %}
-        {% endfor %}
-        </select>
         <span class="text-muted">
           <i class="fa-solid fa-calendar-days"></i>
           <input type="date" name="deadline_date" id="deadline_date" class="deadline-date">

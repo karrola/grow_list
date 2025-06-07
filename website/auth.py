@@ -3,6 +3,7 @@ from .models import User, List
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
+from datetime import datetime
 
 auth = Blueprint('auth', __name__)
 
@@ -58,6 +59,8 @@ def sign_up():
 
             default_list = List(list_title="Skrzynka", user_id=new_user.id, is_default=True)
             db.session.add(default_list)
+
+            new_user.plant_created_at = datetime.now()
 
             db.session.commit()
 

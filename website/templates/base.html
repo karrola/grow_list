@@ -99,7 +99,7 @@
         <span id="goal-text" onclick="toggleGoalForm()" data-bs-toggle="tooltip" title="Kliknij aby zmienić"><i class="fa-solid fa-bullseye"></i>Dzienny cel: {{user.daily_checked_tasks}} / {{user.daily_task_goal}}</span>
         <form id="goal-form" method="POST" action="/update-daily-task-goal" style="display: none;">
           <input type="hidden" name="next" value="{{ request.path }}">
-          <input type="number" name="daily-goal" value="{{ user.daily_task_goal }}" min="1" class="daily-goal-input">
+          <input type="number" name="daily-goal" value="{{ user.daily_task_goal }}" min="1" max="99" class="daily-goal-input">
           <button type="submit" class="btn btn-outline-secondary btn-sm">Zapisz</button>
         </form>
       </div>

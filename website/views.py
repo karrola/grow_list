@@ -54,39 +54,87 @@ def show_list(list_id):
     if not current_list:
         flash('Nie znaleziono listy.', category='error')
         return redirect(url_for('views.home'))
-    
-    if request.method == 'POST':
-        task_data = request.form.get('task', '').strip()
-        reminder = request.form.get('reminder')
 
-        if not task_data:
-            flash('Nazwa zadania musi mieć przynajmniej 1 znak!', category='error')
-        else:
-            if reminder:
-                if request.form.get('deadline_date') and request.form.get('deadline_time'):
-                    deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
-                    deadline_time = datetime.strptime(request.form.get('deadline_time'), '%H:%M').time()
-                    new_task = Task(data=task_data, list_id=list_id, user_id=current_user.id, deadline_date = deadline_date, deadline_time = deadline_time, reminder = True)
-                else:
-                    flash('Wybierz datę i godzinę, aby móc otrzymać przypomnienie!', category='error')
-                    return redirect(url_for('views.show_list', list_id=list_id), code=303)   
+    if request.method == 'POST':
+        action = request.form.get("action")
+
+        if action == 'add_task':
+            task_data = request.form.get('task', '').strip()
+            reminder = request.form.get('reminder')
+
+            if not task_data:
+                flash('Zadanie musi mieć przynajmniej 1 znak!', category='error')
             else:
-                if request.form.get('deadline_date') and request.form.get('deadline_time'):
-                    deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
-                    deadline_time = datetime.strptime(request.form.get('deadline_time'), '%H:%M').time()
-                    new_task = Task(data=task_data, list_id=list_id, user_id=current_user.id, deadline_date = deadline_date, deadline_time = deadline_time)
-                elif request.form.get('deadline_date') and not request.form.get('deadline_time'):
-                    deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
-                    new_task = Task(data=task_data, list_id=list_id, user_id=current_user.id, deadline_date = deadline_date)
-                elif request.form.get('deadline_time') and not request.form.get('deadline_date'):
-                    flash('Wybierz datę, aby móc ustawić godzinę!', category='error')
-                    return redirect(url_for('views.show_list', list_id=list_id), code=303)
+                if reminder:
+                    if request.form.get('deadline_date') and request.form.get('deadline_time'):
+                        deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
+                        deadline_time = datetime.strptime(request.form.get('deadline_time'), '%H:%M').time()
+                        new_task = Task(data=task_data, list_id=list_id, user_id=current_user.id, deadline_date = deadline_date, deadline_time = deadline_time, reminder = True)
+                    else:
+                        flash('Wybierz datę i godzinę, aby móc otrzymać przypomnienie!', category='error')
+                        return redirect(url_for('views.show_list', list_id=list_id), code=303)   
                 else:
-                    new_task = Task(data=task_data, list_id=list_id, user_id=current_user.id)
+                    if request.form.get('deadline_date') and request.form.get('deadline_time'):
+                        deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
+                        deadline_time = datetime.strptime(request.form.get('deadline_time'), '%H:%M').time()
+                        new_task = Task(data=task_data, list_id=list_id, user_id=current_user.id, deadline_date = deadline_date, deadline_time = deadline_time)
+                    elif request.form.get('deadline_date') and not request.form.get('deadline_time'):
+                        deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
+                        new_task = Task(data=task_data, list_id=list_id, user_id=current_user.id, deadline_date = deadline_date)
+                    elif request.form.get('deadline_time') and not request.form.get('deadline_date'):
+                        flash('Wybierz datę, aby móc ustawić godzinę!', category='error')
+                        return redirect(url_for('views.show_list', list_id=list_id), code=303) 
+                    else:
+                        new_task = Task(data=task_data, list_id=list_id, user_id=current_user.id)
 
             db.session.add(new_task)
             db.session.commit()
             flash('Dodano zadanie!', category='success')
+
+            return redirect(url_for('views.show_list', list_id=list_id), code=303) 
+        elif action == 'edit_task':
+            task_id = request.form.get('task_id')
+            task_data = request.form.get('task', '').strip()
+            reminder = request.form.get('reminder')
+
+            task = Task.query.filter_by(id=task_id, user_id=current_user.id).first()
+
+            if not task:
+                flash('Nie znaleziono zadania.', category='error')
+                return redirect(url_for('views.show_list', list_id=list_id), code=303) 
+
+            if task_data:
+                task.data = task_data
+            else: 
+                task.data = task.data
+
+            if reminder:
+                if request.form.get('deadline_date') and request.form.get('deadline_time'):
+                    task.deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
+                    task.deadline_time = datetime.strptime(request.form.get('deadline_time'), '%H:%M').time()
+                    task.reminder = True
+                    task.reminder_sent = False 
+                else:
+                    flash('Wybierz datę i godzinę, aby móc otrzymać przypomnienie!', category='error')
+                    return redirect(url_for('views.show_list', list_id=list_id), code=303)    
+            else:
+                if request.form.get('deadline_date') and request.form.get('deadline_time'):
+                    task.deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
+                    task.deadline_time = datetime.strptime(request.form.get('deadline_time'), '%H:%M').time()
+                elif request.form.get('deadline_time') and not request.form.get('deadline_date'):
+                    flash('Wybierz datę, aby móc ustawić godzinę!', category='error')
+                    return redirect(url_for('views.show_list', list_id=list_id), code=303) 
+                elif request.form.get('deadline_date') and not request.form.get('deadline_time'):
+                    task.deadline_date = datetime.strptime(request.form.get('deadline_date'), '%Y-%m-%d').date()
+                else:
+                    task.deadline_date = None
+                    task.deadline_time = None
+                task.reminder = False
+                task.reminder_sent = False 
+
+            db.session.commit()
+            flash('Zadanie zaktualizowane!', category='success')
+
             return redirect(url_for('views.show_list', list_id=list_id), code=303)
 
     return render_template('list.html', list=current_list, user=current_user)
@@ -162,12 +210,15 @@ def delete_task():
 @views.route("/calendar", methods=['POST', 'GET'])
 @login_required
 def calendar():
-    # od dziś do roku w przód
+    user = current_user
     today = datetime.now().date()
     start_date = today - timedelta(days=365)
     end_date = today + timedelta(days=365)
     
-    tasks = Task.query.filter(Task.deadline_date.isnot(None)).all()
+    tasks = Task.query.filter(
+        Task.deadline_date.isnot(None),
+        Task.user_id == user.id
+    ).all()
 
     events = [
         {
@@ -336,11 +387,11 @@ def water_plant():
 def put_plant_on_shelf():
     user = current_user
     if user.plant_growth >= 3*user.daily_task_goal or user.plant_wither_stage == 3:
-        if user.plant_wither_stage < user.plant_growth:
+        if user.plant_growth < user.daily_task_goal:
             final_growth = 1
-        elif user.plant_wither_stage < 2*user.plant_growth:
+        elif user.plant_growth < 2*user.daily_task_goal:
             final_growth = 2
-        elif user.plant_wither_stage < 3*user.plant_growth:
+        elif user.plant_growth < 3*user.daily_task_goal:
             final_growth = 3
         else:
             final_growth = 4
