@@ -13,6 +13,8 @@ test = Blueprint("test", __name__)
 def test_1_day():
     current_user.plant_unwatered_days = 0
     db.session.commit()
+    update_plant_health_status()
+    flash("Aktualizacja roślin uruchomiona.", category="success")
     return redirect(url_for("views.home"))
 
 @test.route("/test_2_days")
@@ -20,6 +22,8 @@ def test_1_day():
 def test_2_days():
     current_user.plant_unwatered_days = 1
     db.session.commit()
+    update_plant_health_status()
+    flash("Aktualizacja roślin uruchomiona.", category="success")
     return redirect(url_for("views.home"))
 
 @test.route("/test_3_days")
@@ -27,6 +31,8 @@ def test_2_days():
 def test_3_days():
     current_user.plant_unwatered_days = 2
     db.session.commit()
+    update_plant_health_status()
+    flash("Aktualizacja roślin uruchomiona.", category="success")
     return redirect(url_for("views.home"))
 
 @test.route("/test_4_days")
@@ -34,11 +40,6 @@ def test_3_days():
 def test_4_days():
     current_user.plant_unwatered_days = 3
     db.session.commit()
-    return redirect(url_for("views.home"))
-
-@test.route("/run_plant_update")
-@login_required
-def run_plant_update():
     update_plant_health_status()
     flash("Aktualizacja roślin uruchomiona.", category="success")
     return redirect(url_for("views.home"))

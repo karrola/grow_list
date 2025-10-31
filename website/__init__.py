@@ -19,6 +19,7 @@ DB_NAME = "database.db"
 
 def create_app():
     app = Flask(__name__)
+    app.config['DEBUG'] = os.getenv('FLASK_ENV') == 'development'
 
     # podstawowa konfiguracja
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'default-secret-key')
