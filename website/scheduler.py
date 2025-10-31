@@ -9,7 +9,10 @@ import math
 def send_email(to, subject, body):
     msg = Message(subject, sender="growlist.app@gmail.com", recipients=[to])
     msg.body = body
-    mail.send(msg)
+    try:
+        mail.send(msg)
+    except Exception as e:
+        print("Nie udało się wysłać maila:", e)
 
 def check_tasks_and_send_emails():
     with current_app.app_context():
