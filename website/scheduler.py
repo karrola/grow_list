@@ -7,12 +7,15 @@ from flask import current_app
 import math
 
 def send_email(to, subject, body):
+    from flask_mail import Message
     msg = Message(subject, sender="growlist.app@gmail.com", recipients=[to])
     msg.body = body
     try:
         mail.send(msg)
-    except Exception as e:
+    except BaseException as e:  
         print("Nie udało się wysłać maila:", e)
+        return False
+    return True
 
 def check_tasks_and_send_emails():
     with current_app.app_context():
