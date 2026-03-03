@@ -1,14 +1,10 @@
-# GrowList - Aplikacja Todo Flask
+# GrowList - Aplikacja Todo
 
 Prosta aplikacja do zarządzania zadaniami z elementami gamifikacji.
 
-## Link do działającej wersji
+## Technologie
 
-https://grow-list.onrender.com
-
-## Uwagi dotyczące przeglądarki
-
-Aplikację najlepiej testować w Firefox – ta przeglądarka była używana podczas developmentu, więc nie powinno być problemów z wyświetlaniem ani działaniem funkcji.
+Python, Flask, SQLAlchemy, HTML5, CSS3
 
 ## Funkcjonalności
 
@@ -17,6 +13,35 @@ Aplikację najlepiej testować w Firefox – ta przeglądarka była używana pod
 - Podział zadań na listy
 - Kalendarz
 - Gamifikacja - hodowanie roślinki
+
+## Link do działającej wersji
+
+https://grow-list.onrender.com
+
+## Instrukcja uruchomienia lokalnie:
+
+1. Sklonuj repozytorium
+2. (zalecane) Stwórz wirtualne środowisko
+3. Zainstaluj zależności
+   ```
+   pip install -r requirements.txt
+   ```
+4. Na podstawie .env.example przygotuj przygotuj plik .env
+5. Wykonaj migracje bazy danych
+   ```
+   flask db upgrade
+   ```
+6. Uruchom serwer deweloperski
+
+   ```
+   flask run
+   ```
+
+   Aplikacja będzie dostępna pod adresem http://127.0.0.1:5000/.
+
+## Uwagi dotyczące przeglądarki
+
+Aplikację najlepiej testować w Firefox – ta przeglądarka była używana podczas developmentu, więc nie powinno być problemów z wyświetlaniem ani działaniem funkcji.
 
 ## Ścieżki testowe
 
@@ -30,9 +55,7 @@ W pliku `test.py` znajdują się testowe ścieżki do symulacji działania aplik
 
 ## Uwaga dot. powiadomień
 
-Aplikacja jest przygotowana do wysyłania powiadomień e-mail, jednak w środowisku produkcyjnym Render outbound SMTP jest zablokowany. Z tego powodu funkcja wysyłania maili została tymczasowo wyłączona.
+Aplikacja jest przygotowana do wysyłania powiadomień e-mail, jednak w środowisku produkcyjnym Render outbound SMTP jest zablokowany. Z tego powodu na renderze wywołania funkcji `send_email` są obecnie symulowane (logowane w konsoli).
 
-W trybie lokalnym (np. `flask run`) po skonfigurowaniu zmiennych środowiskowych
+W trybie lokalnym po skonfigurowaniu zmiennych środowiskowych
 `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_SERVER` itp. — maile wysyłane są poprawnie.
-
-Na Renderze wywołania funkcji `send_email` są obecnie symulowane (logowane w konsoli).
