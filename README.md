@@ -1,61 +1,60 @@
-# GrowList - Aplikacja Todo
+# GrowList - ToDo Application
 
-Prosta aplikacja do zarządzania zadaniami z elementami gamifikacji.
+A simple task management application with gamification elements.
 
-## Technologie
+## Technologies
 
 Python, Flask, SQLAlchemy, HTML5, CSS3
 
-## Funkcjonalności
+## Features
 
-- Dodawanie, edytowanie i usuwanie zadań
-- Powiadomienia mailowe przypominające o deadlinach
-- Podział zadań na listy
-- Kalendarz
-- Gamifikacja - hodowanie roślinki
+- Add, edit, and delete tasks
+- Email reminders for deadlines
+- Organize tasks into lists
+- Calendar view
+- Gamification – growing a plant 
 
-## Link do działającej wersji
+## Live version
 
 https://grow-list.onrender.com
 
-## Instrukcja uruchomienia lokalnie:
+## Local setup instructions
 
-1. Sklonuj repozytorium
-2. (zalecane) Stwórz wirtualne środowisko
-3. Zainstaluj zależności
-   ```
-   pip install -r requirements.txt
-   ```
-4. Na podstawie .env.example przygotuj przygotuj plik .env
-5. Wykonaj migracje bazy danych
-   ```
-   flask db upgrade
-   ```
-6. Uruchom serwer deweloperski
+1. Clone the repository
+2. (Recommended) Create a virtual environment
+3. Install dependencies:
+```
+pip install -r requirements.txt
+```
+4. Create a `.env` file based on `.env.example`
+5. Apply database migrations:
+```
+flask db upgrade
+```
+6. Run the development server:
+```
+flask run
+```
 
-   ```
-   flask run
-   ```
+The application will be available at: http://127.0.0.1:5000/
 
-   Aplikacja będzie dostępna pod adresem http://127.0.0.1:5000/.
+## Browser notes
 
-## Uwagi dotyczące przeglądarki
+The application works best in Firefox – this browser was used during development, so there should be no display or functionality issues.
 
-Aplikację najlepiej testować w Firefox – ta przeglądarka była używana podczas developmentu, więc nie powinno być problemów z wyświetlaniem ani działaniem funkcji.
+## Test routes
 
-## Ścieżki testowe
+The file `test.py` contains test routes to simulate application behavior:
 
-W pliku `test.py` znajdują się testowe ścieżki do symulacji działania aplikacji:
+- `/test_1_day`, `/test_2_days`, `/test_3_days`, `/test_4_days` – simulate plant wilting after x days and sending notifications about its status
+- `/run_reminders` – send notifications about task deadlines (only tasks due within 24 hours)
+- `/reset_daily_tasks` – reset the number of tasks completed in a day
 
-- `/test_1_day`, `/test_2_days`, `/test_3_days`, `/test_4_days` – symulacja usychania roślinki po x dniach i wysyłania powiadomień o jej stanie
-- `/run_reminders` – wysyłanie powiadomień dotyczących deadlinów zadań (dotyczy zadań, które mają deadline za max 24h)
-- `/reset_daily_tasks` – resetowanie liczby zadań wykonanych w ciągu dnia
+> For testing purposes, in `scheduler.py`, inside the function `update_plant_health_status`, the code that checks the number of tasks completed the previous day is commented out. Instead, the value is set to 0, so the test routes for simulating plant wilting always work.
 
-> Na potrzeby testów w pliku `scheduler.py`, w funkcji `update_plant_health_status`, zakomentowany jest fragment kodu sprawdzający liczbę zadań wykonanych poprzedniego dnia. Zamiast tego wartość ustawiona jest na 0, aby testowe ścieżki do symulacji usychania rośliny zawsze działały.
+## Notes on email notifications
 
-## Uwaga dot. powiadomień
+The application is set up to send email notifications. However, in the Render production environment, outbound SMTP is blocked. Therefore, calls to the `send_email` function are currently simulated (logged to the console) on Render.
 
-Aplikacja jest przygotowana do wysyłania powiadomień e-mail, jednak w środowisku produkcyjnym Render outbound SMTP jest zablokowany. Z tego powodu na renderze wywołania funkcji `send_email` są obecnie symulowane (logowane w konsoli).
-
-W trybie lokalnym po skonfigurowaniu zmiennych środowiskowych
-`MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_SERVER` itp. — maile wysyłane są poprawnie.
+Locally, after configuring the environment variables
+`MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_SERVER`, etc., emails are sent properly.
