@@ -1,6 +1,8 @@
 # GrowList - ToDo Application
 
-A simple task management application with gamification elements.
+A simple task management application with gamification elements, inspired by Todoist.
+
+https://github.com/user-attachments/assets/ba85e050-3f42-49bf-a39e-f1cd03154664
 
 ## Technologies
 
